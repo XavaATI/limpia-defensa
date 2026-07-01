@@ -1168,6 +1168,14 @@ class EnterpriseAPIRequestHandler(http.server.BaseHTTPRequestHandler):
             except Exception as e:
                 self.send_json(500, {"error": f"AV scan failed: {e}", "trace": traceback.format_exc()})
                 
+        elif path == "/api/store/status":
+            try:
+                catalog_path = os.path.join(os.getcwd(), "scripts/store_catalog.json")
+                report = run_store_check(catalog_path)
+                self.send_json(200, report)
+            except Exception as e:
+                self.send_json(500, {"error": f"Store catalog audit failed: {e}", "trace": traceback.format_exc()})
+                
         else:
             self.send_json(404, {"error": "Endpoint not found"})
 
@@ -1481,6 +1489,68 @@ def run_bug_report():
         report["scan_stats"]["error"] = str(e)
     return report
 
+# ANSI terminal colors for CLI reports
+RESET_COLOR = "\033[0m"
+GREEN_COLOR = "\033[1;32m"
+RED_COLOR = "\033[1;31m"
+YELLOW_COLOR = "\033[1;33m"
+
+def run_store_check(catalog_path):
+    report = {
+        "catalog_version": "0.0.0",
+        "last_updated": "",
+        "integrity_passed": True,
+        "results": {}
+    }
+    
+    if not os.path.exists(catalog_path):
+        report["integrity_passed"] = False
+        report["results"]["error"] = f"Catalog file not found: {catalog_path}"
+        return report
+
+    try:
+        with open(catalog_path, "r", encoding="utf-8") as f:
+            catalog = json.load(f)
+        
+        report["catalog_version"] = catalog.get("version", "1.0.0")
+        report["last_updated"] = catalog.get("last_updated", "")
+        
+        for module in catalog.get("modules", []):
+            name = module.get("name")
+            path = module.get("path")
+            expected_hash = module.get("sha256")
+            
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            workspace_root = os.path.dirname(script_dir)
+            abs_path = os.path.abspath(os.path.join(workspace_root, path))
+            
+            if not os.path.exists(abs_path):
+                report["results"][path] = "MISSING"
+                report["integrity_passed"] = False
+                continue
+                
+            sha = hashlib.sha256()
+            try:
+                with open(abs_path, "rb") as bf:
+                    while chunk := bf.read(65536):
+                        sha.update(chunk)
+                file_hash = sha.hexdigest()
+                
+                if file_hash == expected_hash:
+                    report["results"][path] = "OK"
+                else:
+                    report["results"][path] = "MODIFIED"
+                    report["integrity_passed"] = False
+            except Exception as e:
+                report["results"][path] = f"ERROR: {e}"
+                report["integrity_passed"] = False
+                
+    except Exception as e:
+        report["integrity_passed"] = False
+        report["results"]["error"] = f"Failed to parse catalog: {e}"
+        
+    return report
+
 def run_api_server(host, port, token):
     EnterpriseAPIRequestHandler.server_token = token
     server = http.server.HTTPServer((host, port), EnterpriseAPIRequestHandler)
@@ -1558,6 +1628,10 @@ def main():
     bug_parser = subparsers.add_parser("bug-report", help="Generate local diagnostic bug report bundle")
     bug_parser.add_argument("--output", help="Custom JSON path to save diagnostics")
 
+    # Store Check parser
+    store_parser = subparsers.add_parser("store-check", help="Audit local files integrity against the store catalog")
+    store_parser.add_argument("--catalog", help="Path to store_catalog.json")
+
     args = parser.parse_args()
 
     if not args.command:
@@ -1610,6 +1684,23 @@ def main():
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2)
         print(f"✅ Diagnostic bundle saved to: {out_path}")
+
+    elif args.command == "store-check":
+        print("📦 Commencing local Store Catalog integrity audit...")
+        catalog_path = args.catalog if args.catalog else os.path.join(os.path.dirname(os.path.abspath(__file__)), "store_catalog.json")
+        report = run_store_check(catalog_path)
+        print(f"Catalog Version: {report['catalog_version']} | Last Updated: {report['last_updated']}")
+        print("--------------------------------------------------")
+        for path, status in report["results"].items():
+            color = GREEN_COLOR if status == "OK" else (RED_COLOR if status == "MISSING" else YELLOW_COLOR)
+            print(f"{path:<40} -> {color}{status}{RESET_COLOR}")
+        print("--------------------------------------------------")
+        if report["integrity_passed"]:
+            print(f"✅ {GREEN_COLOR}INTEGRITY AUDIT PASSED successfully.{RESET_COLOR}")
+            sys.exit(0)
+        else:
+            print(f"❌ {RED_COLOR}INTEGRITY AUDIT FAILED. System modified or components missing.{RESET_COLOR}")
+            sys.exit(1)
 
 if __name__ == "__main__":
     main()

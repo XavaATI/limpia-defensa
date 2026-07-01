@@ -1,0 +1,36 @@
+{
+  "version": "1.2.0",
+  "last_updated": "2026-06-30T20:48:00Z",
+  "modules": [
+    {
+      "name": "limpia_defensa.py",
+      "type": "cli_engine",
+      "path": "scripts/limpia_defensa.py",
+      "sha256": "c2ba2acb1fa78d53d384414d7cae7c232614945d1db6cdd6b10bfcf4f58b6236"
+    },
+    {
+      "name": "LimpiaDefensaGUI.swift",
+      "type": "gui_source",
+      "path": "scripts/LimpiaDefensaGUI.swift",
+      "sha256": "26fc70fc405c52619840ea8a6c567f8076b58f26868da844692f6b527aace20f"
+    },
+    {
+      "name": "limpia-defensa-gui",
+      "type": "gui_binary",
+      "path": "scripts/limpia-defensa-gui",
+      "sha256": "cb08a3d0c308b6e29ab80b70fa49983feb8e1f31186b037c9ffe634dee46d4ac"
+    },
+    {
+      "name": "com.limpiadefensa.agent.plist",
+      "type": "launch_agent",
+      "path": "scripts/com.limpiadefensa.agent.plist",
+      "sha256": "ad579612ac44185dcfac77f5cba5dd755e46231b3bbcb101d342422c7af05277"
+    },
+    {
+      "name": "kali_test_suite.py",
+      "type": "test_suite",
+      "path": "scripts/kali_test_suite.py",
+      "sha256": "05057f696bf445689632a80de150e8cc62a7ea32b6271344e5efdef19c2f58a9"
+    }
+  ]
+}

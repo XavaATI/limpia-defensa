@@ -165,6 +165,15 @@ def run_tests():
         log(f"[-] Test 7 FAIL: bugreport structure invalid: {body}", RED)
         failed_count += 1
 
+    # Test 8: Store Catalog Integrity API check
+    log("[*] Test 8: Store Catalog Integrity API check...", CYAN)
+    status, body = make_request("http://localhost:9999/api/store/status", headers={"Authorization": "Bearer kali-token"})
+    if status == 200 and body.get("integrity_passed") is True:
+        log("[+] Test 8 PASS: Store Catalog integrity verified successfully.", GREEN)
+    else:
+        log(f"[-] Test 8 FAIL: Store status check failed: {body}", RED)
+        failed_count += 1
+
     # Teardown background server
     log("[*] Tearing down background API test server...", CYAN)
     server_process.terminate()

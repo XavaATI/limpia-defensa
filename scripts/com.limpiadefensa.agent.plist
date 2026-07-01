@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.limpiadefensa.agent</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/python3</string>
+        <string>/Users/xavasena/collectivo/limpiada/scripts/limpia_defensa.py</string>
+        <string>api-server</string>
+        <string>--port</string>
+        <string>8989</string>
+        <string>--token</string>
+        <string>test-enterprise-token</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>WorkingDirectory</key>
+    <string>/Users/xavasena/collectivo/limpiada</string>
+    <key>StandardOutPath</key>
+    <string>/Users/xavasena/Library/Logs/LimpiaDefensaAPI.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/xavasena/Library/Logs/LimpiaDefensaAPI.log</string>
+</dict>
+</plist>

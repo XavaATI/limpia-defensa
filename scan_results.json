@@ -1,369 +1,52 @@
 {
-  "timestamp": "2026-06-02 17:49:51",
+  "timestamp": "2026-06-30 20:10:36",
   "gdrive_connected": true,
   "categories": {
     "caches": [
       {
-        "name": "User Cache",
-        "path": "/Users/xavasena/Library/Caches",
-        "size": 4302075639,
-        "size_str": "4.01 GB",
-        "files_count": 36029
-      },
-      {
         "name": "System Cache",
         "path": "/Library/Caches",
-        "size": 2484,
-        "size_str": "2.43 KB",
-        "files_count": 1
-      },
-      {
-        "name": "Chrome Cache",
-        "path": "/Users/xavasena/Library/Caches/Google/Chrome/Default/Cache",
-        "size": 10510892,
-        "size_str": "10.02 MB",
-        "files_count": 241
+        "size": 7456576,
+        "size_str": "7.11 MB",
+        "files_count": 2
       }
     ],
     "logs": [
       {
-        "name": "User Logs",
-        "path": "/Users/xavasena/Library/Logs",
-        "size": 1308025,
-        "size_str": "1.25 MB",
-        "files_count": 11
-      },
-      {
         "name": "System Logs",
         "path": "/Library/Logs",
-        "size": 834627,
-        "size_str": "815.07 KB",
-        "files_count": 20
+        "size": 68460,
+        "size_str": "66.86 KB",
+        "files_count": 8
       },
       {
         "name": "Unix System Logs",
         "path": "/var/log",
-        "size": 51638023,
-        "size_str": "49.25 MB",
-        "files_count": 30
+        "size": 26727223,
+        "size_str": "25.49 MB",
+        "files_count": 28
       }
     ],
-    "installers": [
-      {
-        "name": "CapCut_7267140873131950085_installer.dmg",
-        "path": "/Users/xavasena/Downloads/CapCut_7267140873131950085_installer.dmg",
-        "size": 3605061,
-        "size_str": "3.44 MB"
-      }
-    ],
-    "duplicates": [
-      {
-        "size": 5417269,
-        "size_str": "5.17 MB",
-        "hash": "e43f8f3e421c5e0e4a5140e03b03c197",
-        "paths": [
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/app/build/outputs/apk/debug/app-debug.apk",
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/outputs/silent-sms-detector-api36-debug.apk"
-        ]
-      },
-      {
-        "size": 2748429,
-        "size_str": "2.62 MB",
-        "hash": "ff711112a5e89730d49fe93f867a7db5",
-        "paths": [
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/platforms/android-36/data/res/drawable-sw600dp-nodpi/default_wallpaper.png",
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/platforms/android-35/data/res/drawable-sw600dp-nodpi/default_wallpaper.png"
-        ]
-      },
-      {
-        "size": 3944317,
-        "size_str": "3.76 MB",
-        "hash": "9dfdc5749f3a6d4075782a9b3e2aac42",
-        "paths": [
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/platforms/android-36/data/res/drawable-sw720dp-nodpi/default_wallpaper.png",
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/platforms/android-35/data/res/drawable-sw720dp-nodpi/default_wallpaper.png"
-        ]
-      },
-      {
-        "size": 2735878,
-        "size_str": "2.61 MB",
-        "hash": "3c345206c4f2243e5d1d7caceb9243cd",
-        "paths": [
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/cmdline-tools/latest/lib/external/net/java/dev/jna/jna-platform/5.6.0/jna-platform-5.6.0.jar",
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/gradle-home/caches/modules-2/files-2.1/net.java.dev.jna/jna-platform/5.6.0/d18424ffb8bbfd036d71bcaab9b546858f2ef986/jna-platform-5.6.0.jar"
-        ]
-      },
-      {
-        "size": 1463587,
-        "size_str": "1.4 MB",
-        "hash": "7c086c3f6dbf92d46634a45f7727a3f6",
-        "paths": [
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/cmdline-tools/latest/lib/external/org/jetbrains/kotlinx/kotlinx-coroutines-core-jvm/1.9.0/kotlinx-coroutines-core-jvm-1.9.0.jar",
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/gradle-home/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-coroutines-core-jvm/1.9.0/9beade4c1c1569e4f36cbd2c37e02e3e41502601/kotlinx-coroutines-core-jvm-1.9.0.jar"
-        ]
-      },
-      {
-        "size": 8575537,
-        "size_str": "8.18 MB",
-        "hash": "a15076acd41c47c88b7c737dcc0bc4e1",
-        "paths": [
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/cmdline-tools/latest/lib/external/org/bouncycastle/bcprov-jdk18on/1.79/bcprov-jdk18on-1.79.jar",
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/gradle-home/caches/modules-2/files-2.1/org.bouncycastle/bcprov-jdk18on/1.79/4d8e2732bcee15f1db93df266c3f5b70ce5cac21/bcprov-jdk18on-1.79.jar"
-        ]
-      },
-      {
-        "size": 1134345,
-        "size_str": "1.08 MB",
-        "hash": "cd3898ba7675b9577297c6f1722bd84b",
-        "paths": [
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/cmdline-tools/latest/lib/external/org/bouncycastle/bcpkix-jdk18on/1.79/bcpkix-jdk18on-1.79.jar",
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/gradle-home/caches/modules-2/files-2.1/org.bouncycastle/bcpkix-jdk18on/1.79/7693cec3b8779b74b35466dcaeeaac7409872954/bcpkix-jdk18on-1.79.jar"
-        ]
-      },
-      {
-        "size": 3079289,
-        "size_str": "2.94 MB",
-        "hash": "7b7d80d99af4181db55b00dad50a91bb",
-        "paths": [
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/cmdline-tools/latest/lib/external/com/google/guava/guava/33.3.1-jre/guava-33.3.1-jre.jar",
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/gradle-home/caches/modules-2/files-2.1/com.google.guava/guava/33.3.1-jre/852f8b363da0111e819460021ca693cacca3e8db/guava-33.3.1-jre.jar"
-        ]
-      },
-      {
-        "size": 1875414,
-        "size_str": "1.79 MB",
-        "hash": "639cfcf9717cf4e4dd9e808e6f8d24a4",
-        "paths": [
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/cmdline-tools/latest/lib/external/com/google/protobuf/protobuf-java/3.25.5/protobuf-java-3.25.5.jar",
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/gradle-home/caches/modules-2/files-2.1/com.google.protobuf/protobuf-java/3.25.5/5ae5c9ec39930ae9b5a61b32b93288818ec05ec1/protobuf-java-3.25.5.jar"
-        ]
-      },
-      {
-        "size": 1721288,
-        "size_str": "1.64 MB",
-        "hash": "ab4db9ca387cc08d2c20adbbe2fcd6ee",
-        "paths": [
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/build-tools/36.0.0/renderscript/lib/blas/x86/libblasV8.so",
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/build-tools/35.0.0/renderscript/lib/blas/x86/libblasV8.so"
-        ]
-      },
-      {
-        "size": 1453592,
-        "size_str": "1.39 MB",
-        "hash": "500b8028bacb406d380b051cfa8e4320",
-        "paths": [
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/build-tools/36.0.0/renderscript/lib/blas/arm64-v8a/libblasV8.so",
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/build-tools/35.0.0/renderscript/lib/blas/arm64-v8a/libblasV8.so"
-        ]
-      },
-      {
-        "size": 2053256,
-        "size_str": "1.96 MB",
-        "hash": "b6926cf15d8d2a16d37045d481bb7325",
-        "paths": [
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/build-tools/36.0.0/renderscript/lib/blas/x86_64/libblasV8.so",
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/build-tools/35.0.0/renderscript/lib/blas/x86_64/libblasV8.so"
-        ]
-      },
-      {
-        "size": 1284312,
-        "size_str": "1.22 MB",
-        "hash": "330e9806bfaf46bf6a620a41785dd56f",
-        "paths": [
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/build-tools/36.0.0/renderscript/lib/packaged/x86/libRSSupport.so",
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/build-tools/35.0.0/renderscript/lib/packaged/x86/libRSSupport.so"
-        ]
-      },
-      {
-        "size": 1236904,
-        "size_str": "1.18 MB",
-        "hash": "67d87bab6a9f3d7717f00ada740e4ddf",
-        "paths": [
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/build-tools/36.0.0/renderscript/lib/packaged/arm64-v8a/libRSSupport.so",
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/build-tools/35.0.0/renderscript/lib/packaged/arm64-v8a/libRSSupport.so"
-        ]
-      },
-      {
-        "size": 1301136,
-        "size_str": "1.24 MB",
-        "hash": "2445a8ea320026edf45235329aa99329",
-        "paths": [
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/build-tools/36.0.0/renderscript/lib/packaged/x86_64/libRSSupport.so",
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/build-tools/35.0.0/renderscript/lib/packaged/x86_64/libRSSupport.so"
-        ]
-      },
-      {
-        "size": 1057296,
-        "size_str": "1.01 MB",
-        "hash": "371a6108ea30e43e68643ee0e75eade7",
-        "paths": [
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/build-tools/36.0.0/renderscript/lib/intermediates/x86/libc.so",
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/build-tools/35.0.0/renderscript/lib/intermediates/x86/libc.so"
-        ]
-      },
-      {
-        "size": 1135488,
-        "size_str": "1.08 MB",
-        "hash": "6d5382d4aeb75490d768edc1a7d94a52",
-        "paths": [
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/build-tools/36.0.0/renderscript/lib/intermediates/arm64-v8a/libc.so",
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/build-tools/35.0.0/renderscript/lib/intermediates/arm64-v8a/libc.so"
-        ]
-      },
-      {
-        "size": 1106040,
-        "size_str": "1.05 MB",
-        "hash": "28c4133330f8f81ab5ba440ff0043901",
-        "paths": [
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/build-tools/36.0.0/renderscript/lib/intermediates/x86_64/libc.so",
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/build-tools/35.0.0/renderscript/lib/intermediates/x86_64/libc.so"
-        ]
-      },
-      {
-        "size": 8053888,
-        "size_str": "7.68 MB",
-        "hash": "7f0bc1f30c35088dc737a5c1e6c4a2b1",
-        "paths": [
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/gradle-home/wrapper/dists/gradle-8.13-bin/5xuhj0ry160q40clulazy9h7d/gradle-8.13/lib/groovy-3.0.22.jar",
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/gradle-home/caches/modules-2/files-2.1/org.codehaus.groovy/groovy/3.0.22/8403cbf38ed86f9fde3abbf0d2548642ddfebd00/groovy-3.0.22.jar"
-        ]
-      },
-      {
-        "size": 1476653,
-        "size_str": "1.41 MB",
-        "hash": "9ba1873872fe1406d39bc40683050c45",
-        "paths": [
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/gradle-home/wrapper/dists/gradle-8.13-bin/5xuhj0ry160q40clulazy9h7d/gradle-8.13/lib/kotlinx-coroutines-core-jvm-1.6.4.jar",
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/gradle-home/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-coroutines-core-jvm/1.6.4/2c997cd1c0ef33f3e751d3831929aeff1390cb30/kotlinx-coroutines-core-jvm-1.6.4.jar"
-        ]
-      },
-      {
-        "size": 1734408,
-        "size_str": "1.65 MB",
-        "hash": "9253560f45bb200743f6c43e3dccd0b1",
-        "paths": [
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/gradle-home/caches/8.13/transforms/aec39655779936d3e4679ed1462110b3/transformed/map-impl-8.0.112/map-impl-8.0.112_dex/classes.dex",
-          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/gradle-home/caches/8.13/transforms/04c5090faee0a038c53eab97310a8158/transformed/map-impl-8.0.112/map-impl-8.0.112_dex/classes.dex"
-        ]
-      },
-      {
-        "size": 167282064,
-        "size_str": "159.53 MB",
-        "hash": "2eef71b97f2096a04ddc951c018d866a",
-        "paths": [
-          "/Users/xavasena/Documents/Scripts/roku_remote_tool.app/Contents/Frameworks/Electron Framework.framework/Electron Framework",
-          "/Users/xavasena/Documents/Scripts/roku_remote_tool.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Electron Framework"
-        ]
-      }
-    ],
+    "installers": [],
+    "duplicates": [],
     "orphans": [
-      {
-        "name": "familycircled",
-        "path": "/Users/xavasena/Library/Application Support/familycircled",
-        "size": 0,
-        "size_str": "0 B"
-      },
-      {
-        "name": "com.mackeeper.MacKeeper-Reminder",
-        "path": "/Users/xavasena/Library/Application Support/com.mackeeper.MacKeeper-Reminder",
-        "size": 277,
-        "size_str": "277.0 B"
-      },
-      {
-        "name": "ngrok",
-        "path": "/Users/xavasena/Library/Application Support/ngrok",
-        "size": 85,
-        "size_str": "85.0 B"
-      },
-      {
-        "name": "networkserviceproxy",
-        "path": "/Users/xavasena/Library/Application Support/networkserviceproxy",
-        "size": 2475696,
-        "size_str": "2.36 MB"
-      },
-      {
-        "name": "roku_remote_tool",
-        "path": "/Users/xavasena/Library/Application Support/roku_remote_tool",
-        "size": 1222639,
-        "size_str": "1.17 MB"
-      },
-      {
-        "name": "DiskImages",
-        "path": "/Users/xavasena/Library/Application Support/DiskImages",
-        "size": 1024,
-        "size_str": "1.0 KB"
-      },
-      {
-        "name": "Spotlight",
-        "path": "/Users/xavasena/Library/Application Support/Spotlight",
-        "size": 0,
-        "size_str": "0 B"
-      },
-      {
-        "name": "ControlCenter",
-        "path": "/Users/xavasena/Library/Application Support/ControlCenter",
-        "size": 0,
-        "size_str": "0 B"
-      },
       {
         "name": "Animoji",
         "path": "/Users/xavasena/Library/Application Support/Animoji",
-        "size": 2902880,
-        "size_str": "2.77 MB"
-      },
-      {
-        "name": "com.mackeeper.MacKeeper-Info",
-        "path": "/Users/xavasena/Library/Application Support/com.mackeeper.MacKeeper-Info",
-        "size": 277,
-        "size_str": "277.0 B"
-      },
-      {
-        "name": "Tunnelblick",
-        "path": "/Users/xavasena/Library/Application Support/Tunnelblick",
-        "size": 186136,
-        "size_str": "181.77 KB"
-      },
-      {
-        "name": "homeenergyd",
-        "path": "/Users/xavasena/Library/Application Support/homeenergyd",
-        "size": 0,
-        "size_str": "0 B"
+        "size": 382592,
+        "size_str": "373.62 KB"
       },
       {
         "name": "CrashReporter",
         "path": "/Users/xavasena/Library/Application Support/CrashReporter",
-        "size": 78093,
-        "size_str": "76.26 KB"
-      },
-      {
-        "name": "Chromium",
-        "path": "/Users/xavasena/Library/Application Support/Chromium",
-        "size": 324,
-        "size_str": "324.0 B"
+        "size": 75024,
+        "size_str": "73.27 KB"
       },
       {
         "name": "Knowledge",
         "path": "/Users/xavasena/Library/Application Support/Knowledge",
         "size": 0,
         "size_str": "0 B"
-      },
-      {
-        "name": "icdd",
-        "path": "/Users/xavasena/Library/Application Support/icdd",
-        "size": 1290,
-        "size_str": "1.26 KB"
-      },
-      {
-        "name": "contactsd",
-        "path": "/Users/xavasena/Library/Application Support/contactsd",
-        "size": 0,
-        "size_str": "0 B"
-      },
-      {
-        "name": "ZoomUpdater",
-        "path": "/Users/xavasena/Library/Application Support/ZoomUpdater",
-        "size": 3072,
-        "size_str": "3.0 KB"
       },
       {
         "name": "AddressBook",
@@ -378,26 +61,8 @@
         "size_str": "0 B"
       },
       {
-        "name": "com.mackeeper.MacKeeper",
-        "path": "/Users/xavasena/Library/Application Support/com.mackeeper.MacKeeper",
-        "size": 277,
-        "size_str": "277.0 B"
-      },
-      {
         "name": "DifferentialPrivacy",
         "path": "/Users/xavasena/Library/Application Support/DifferentialPrivacy",
-        "size": 0,
-        "size_str": "0 B"
-      },
-      {
-        "name": "com.mackeeper.MacKeeperAgent",
-        "path": "/Users/xavasena/Library/Application Support/com.mackeeper.MacKeeperAgent",
-        "size": 277,
-        "size_str": "277.0 B"
-      },
-      {
-        "name": "AskPermission",
-        "path": "/Users/xavasena/Library/Application Support/AskPermission",
         "size": 0,
         "size_str": "0 B"
       },
@@ -406,42 +71,41 @@
         "path": "/Users/xavasena/Library/Application Support/SJPulse",
         "size": 2913,
         "size_str": "2.84 KB"
-      },
-      {
-        "name": "MacKeeper",
-        "path": "/Users/xavasena/Library/Application Support/MacKeeper",
-        "size": 346743,
-        "size_str": "338.62 KB"
-      },
-      {
-        "name": "Arc",
-        "path": "/Users/xavasena/Library/Application Support/Arc",
-        "size": 0,
-        "size_str": "0 B"
-      },
-      {
-        "name": "iCloud",
-        "path": "/Users/xavasena/Library/Application Support/iCloud",
-        "size": 37824,
-        "size_str": "36.94 KB"
-      },
-      {
-        "name": "Vivaldi",
-        "path": "/Users/xavasena/Library/Application Support/Vivaldi",
-        "size": 0,
-        "size_str": "0 B"
-      },
-      {
-        "name": "BraveSoftware",
-        "path": "/Users/xavasena/Library/Application Support/BraveSoftware",
-        "size": 0,
-        "size_str": "0 B"
       }
-    ]
+    ],
+    "vms": [],
+    "videos": [],
+    "photos": [
+      {
+        "name": "Screenshot 2026-06-21 at 3.49.46\u202fPM.png",
+        "path": "/Users/xavasena/Desktop/Screenshot 2026-06-21 at 3.49.46\u202fPM.png",
+        "size": 2723351,
+        "size_str": "2.6 MB"
+      },
+      {
+        "name": "Screenshot 2026-06-21 at 3.49.46\u202fPM (2).png",
+        "path": "/Users/xavasena/Desktop/Screenshot 2026-06-21 at 3.49.46\u202fPM (2).png",
+        "size": 3821899,
+        "size_str": "3.64 MB"
+      },
+      {
+        "name": "Screenshot 2026-06-21 at 3.50.46\u202fPM.png",
+        "path": "/Users/xavasena/Desktop/Screenshot 2026-06-21 at 3.50.46\u202fPM.png",
+        "size": 65617,
+        "size_str": "64.08 KB"
+      },
+      {
+        "name": "Screenshot 2026-06-21 at 3.49.51\u202fPM.png",
+        "path": "/Users/xavasena/Desktop/Screenshot 2026-06-21 at 3.49.51\u202fPM.png",
+        "size": 66440,
+        "size_str": "64.88 KB"
+      }
+    ],
+    "archives": []
   },
   "summary": {
     "total_size": 0,
-    "reclaimable_size": 4599104968,
-    "reclaimable_str": "4.28 GB"
+    "reclaimable_size": 41390095,
+    "reclaimable_str": "39.47 MB"
   }
 }

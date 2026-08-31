@@ -5,7 +5,7 @@ class LimpiaDefensa < Formula
   sha256 "0000000000000000000000000000000000000000000000000000000000000000" # Placeholder SHA-256 for release tarball
   license "MIT"
 
-  depends_on "python@3.14"
+  depends_on "python@3"
 
   def install
     # Install CLI engine

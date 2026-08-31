@@ -1,24 +1,24 @@
 {
   "version": "1.2.0",
-  "last_updated": "2026-06-30T20:48:00Z",
+  "last_updated": "2026-08-31T18:47:00Z",
   "modules": [
     {
       "name": "limpia_defensa.py",
       "type": "cli_engine",
       "path": "scripts/limpia_defensa.py",
-      "sha256": "c2ba2acb1fa78d53d384414d7cae7c232614945d1db6cdd6b10bfcf4f58b6236"
+      "sha256": "58663466c67d791ad08288b0d719bfa5df1909ef1db670596f569447cd39e042"
     },
     {
       "name": "LimpiaDefensaGUI.swift",
       "type": "gui_source",
       "path": "scripts/LimpiaDefensaGUI.swift",
-      "sha256": "26fc70fc405c52619840ea8a6c567f8076b58f26868da844692f6b527aace20f"
+      "sha256": "16398452ddefa93bbe730fa18a4e50a7d38b4a55ebea84c9e5065194d8629326"
     },
     {
       "name": "limpia-defensa-gui",
       "type": "gui_binary",
       "path": "scripts/limpia-defensa-gui",
-      "sha256": "cb08a3d0c308b6e29ab80b70fa49983feb8e1f31186b037c9ffe634dee46d4ac"
+      "sha256": "b30480e347de6d23fd8d43c85caa454e0541571d0be2bfdb776a14b66943d088"
     },
     {
       "name": "com.limpiadefensa.agent.plist",

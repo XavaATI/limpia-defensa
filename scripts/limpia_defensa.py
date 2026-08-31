@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import time
 import sys
 import json
 import hashlib
@@ -1077,30 +1078,67 @@ def perform_quarantine(filepath, pid, backup_type, backup_path, encrypt=False, p
     # 2. Terminate PID
     if pid > 0:
         print(f"🛑 Terminating process PID {pid}...")
+        terminated = False
         try:
             os.kill(pid, 9)
-            print(f"✅ Terminated process {pid}")
+            print(f"✅ Sent SIGKILL to process {pid}")
+            terminated = True
         except ProcessLookupError:
             print(f"ℹ️ Process {pid} already dead.")
+            terminated = True
         except PermissionError:
             print(f"⚠️ Permission denied. Retrying with sudo...")
-            subprocess.run(["sudo", "kill", "-9", str(pid)], check=True)
-            print(f"✅ Terminated process {pid} via sudo")
+            try:
+                subprocess.run(["sudo", "kill", "-9", str(pid)], check=True)
+                print(f"✅ Terminated process {pid} via sudo")
+                terminated = True
+            except Exception as e:
+                print(f"❌ Failed to terminate process {pid} via sudo: {e}")
         except Exception as e:
             print(f"❌ Failed to terminate process {pid}: {e}")
+
+        if terminated:
+            print(f"⏳ Waiting for process {pid} to terminate completely...")
+            max_retries = 30  # 3 seconds max
+            for i in range(max_retries):
+                try:
+                    os.kill(pid, 0)
+                    time.sleep(0.1)
+                except ProcessLookupError:
+                    print(f"ℹ️ Process {pid} has exited.")
+                    break
+                except PermissionError:
+                    # Process still exists, but we lack permissions to signal it.
+                    time.sleep(0.1)
+            else:
+                print(f"⚠️ Process {pid} did not exit within 3 seconds.")
 
     # 3. Delete binary from disk
     if os.path.exists(filepath):
         print(f"🗑️ Deleting file from disk: {filepath}")
-        try:
-            os.remove(filepath)
-            print(f"✅ Deleted threat binary: {filepath}")
-        except PermissionError:
-            print(f"⚠️ Permission denied deleting file. Retrying with sudo...")
-            subprocess.run(["sudo", "rm", "-f", filepath], check=True)
-            print(f"✅ Deleted threat binary via sudo: {filepath}")
-        except Exception as e:
-            print(f"❌ Failed to delete file {filepath}: {e}")
+        delete_success = False
+        for attempt in range(5):
+            try:
+                os.remove(filepath)
+                print(f"✅ Deleted threat binary: {filepath}")
+                delete_success = True
+                break
+            except PermissionError:
+                print(f"⚠️ Permission denied deleting file. Retrying with sudo...")
+                try:
+                    subprocess.run(["sudo", "rm", "-f", filepath], check=True)
+                    print(f"✅ Deleted threat binary via sudo: {filepath}")
+                    delete_success = True
+                    break
+                except Exception as e:
+                    print(f"❌ Failed to delete file via sudo (attempt {attempt + 1}/5): {e}")
+            except Exception as e:
+                print(f"❌ Failed to delete file (attempt {attempt + 1}/5): {e}")
+            
+            time.sleep(0.2)
+            
+        if not delete_success:
+            print(f"❌ Permanent failure: Could not delete threat binary {filepath}")
 
 # ==============================================================================
 # ENTERPRISE REST API & DIAGNOSTICS ENGINES
@@ -1260,13 +1298,18 @@ class EnterpriseAPIRequestHandler(http.server.BaseHTTPRequestHandler):
 (deny network*)
 (deny file-write* (subpath "/System"))
 (deny file-write* (subpath "/Library"))
+(deny file-write* (subpath "/usr"))
+(deny file-write* (subpath "/bin"))
+(deny file-write* (subpath "/sbin"))
+(deny file-write* (subpath "/private/var/root"))
 """
             elif profile_type == "read-only":
+                clean_cwd = os.getcwd().replace('\\', '\\\\').replace('"', '\\"')
                 sb_profile = f"""(version 1)
 (deny default)
 (allow process*)
 (allow file-read*)
-(allow file-write* (subpath "{os.getcwd()}"))
+(allow file-write* (subpath "{clean_cwd}"))
 (allow sysctl-read)
 """
             else:

@@ -1650,7 +1650,12 @@ def get_doctor_report():
     # 4. Binary Code Signatures
     script_dir = os.path.dirname(os.path.abspath(__file__))
     workspace_root = os.path.dirname(script_dir)
-    gui_binary = os.path.join(script_dir, "limpia-defensa-gui")
+    gui_candidates = [
+        os.path.join(script_dir, "limpia-defensa-gui"),
+        os.path.join(workspace_root, "bin", "limpia-defensa-gui"),
+        shutil.which("limpia-defensa-gui")
+    ]
+    gui_binary = next((g for g in gui_candidates if g and os.path.exists(g)), os.path.join(script_dir, "limpia-defensa-gui"))
     app_bundle = os.path.join(workspace_root, "LimpiaDefensa.app")
     
     gui_status = "MISSING"
@@ -1668,8 +1673,8 @@ def get_doctor_report():
         app_status = "SIGNED" if app_cs.returncode == 0 else "UNSIGNED"
 
     # 5. Store Catalog Integrity
-    catalog_path = os.path.join(script_dir, "store_catalog.json")
-    chk = run_store_check(catalog_path) if os.path.exists(catalog_path) else {"integrity_passed": False, "catalog_version": "0.0.0"}
+    catalog_path = find_catalog_path()
+    chk = run_store_check(catalog_path)
     if not chk.get("integrity_passed", False):
         issues.append("Run 'python3 scripts/limpia_defensa.py patch-release' to synchronize catalog hashes")
         
@@ -2201,7 +2206,25 @@ GREEN_COLOR = "\033[1;32m"
 RED_COLOR = "\033[1;31m"
 YELLOW_COLOR = "\033[1;33m"
 
-def run_store_check(catalog_path):
+def find_catalog_path():
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    workspace_root = os.path.dirname(script_dir)
+    candidates = [
+        os.path.join(script_dir, "store_catalog.json"),
+        os.path.join(workspace_root, "scripts", "store_catalog.json"),
+        os.path.join(workspace_root, "store_catalog.json"),
+        os.path.join(os.path.dirname(workspace_root), "scripts", "store_catalog.json"),
+        "/opt/homebrew/opt/limpia-defensa/scripts/store_catalog.json"
+    ]
+    for c in candidates:
+        if os.path.exists(c):
+            return c
+    return candidates[0]
+
+def run_store_check(catalog_path=None):
+    if not catalog_path:
+        catalog_path = find_catalog_path()
+
     report = {
         "catalog_version": "0.0.0",
         "last_updated": "",
@@ -2228,7 +2251,14 @@ def run_store_check(catalog_path):
             
             script_dir = os.path.dirname(os.path.abspath(__file__))
             workspace_root = os.path.dirname(script_dir)
-            abs_path = os.path.abspath(os.path.join(workspace_root, path))
+            base_filename = os.path.basename(path)
+            candidate_paths = [
+                os.path.abspath(os.path.join(workspace_root, path)),
+                os.path.abspath(os.path.join(workspace_root, "bin", base_filename)),
+                os.path.abspath(os.path.join(workspace_root, "scripts", base_filename)),
+                os.path.abspath(os.path.join(script_dir, base_filename)),
+            ]
+            abs_path = next((cp for cp in candidate_paths if os.path.exists(cp)), candidate_paths[0])
             
             if not os.path.exists(abs_path):
                 report["results"][path] = "MISSING"
@@ -2254,7 +2284,6 @@ def run_store_check(catalog_path):
     except Exception as e:
         report["integrity_passed"] = False
         report["results"]["error"] = f"Failed to parse catalog: {e}"
-        
     return report
 
 def run_api_server(host, port, token):

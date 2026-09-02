@@ -1,14 +1,14 @@
 {
-  "timestamp": "2026-09-02 14:05:45",
+  "timestamp": "2026-09-02 14:09:54",
   "gdrive_connected": true,
   "categories": {
     "caches": [
       {
         "name": "User Cache",
         "path": "/Users/xavasena/Library/Caches",
-        "size": 2169841014,
+        "size": 2169758331,
         "size_str": "2.02 GB",
-        "files_count": 16773
+        "files_count": 16772
       },
       {
         "name": "System Cache",
@@ -29,9 +29,9 @@
       {
         "name": "Homebrew Download Cache",
         "path": "/Users/xavasena/Library/Caches/Homebrew",
-        "size": 76749846,
-        "size_str": "73.19 MB",
-        "files_count": 2559
+        "size": 76646683,
+        "size_str": "73.1 MB",
+        "files_count": 2558
       }
     ],
     "ai_model_caches": [
@@ -57,22 +57,22 @@
       {
         "name": "User Logs",
         "path": "/Users/xavasena/Library/Logs",
-        "size": 937214,
-        "size_str": "915.25 KB",
+        "size": 970897,
+        "size_str": "948.14 KB",
         "files_count": 9
       },
       {
         "name": "System Logs",
         "path": "/Library/Logs",
-        "size": 525097,
-        "size_str": "512.79 KB",
+        "size": 527864,
+        "size_str": "515.49 KB",
         "files_count": 27
       },
       {
         "name": "Unix System Logs",
         "path": "/var/log",
-        "size": 25340335,
-        "size_str": "24.17 MB",
+        "size": 25428587,
+        "size_str": "24.25 MB",
         "files_count": 28
       }
     ],
@@ -110,8 +110,8 @@
       {
         "name": "Codex",
         "path": "/Users/xavasena/Library/Application Support/Codex",
-        "size": 170502667,
-        "size_str": "162.6 MB"
+        "size": 170504135,
+        "size_str": "162.61 MB"
       },
       {
         "name": "homeenergyd",
@@ -262,7 +262,7 @@
   },
   "summary": {
     "total_size": 0,
-    "reclaimable_size": 7656806919,
+    "reclaimable_size": 7656747243,
     "reclaimable_str": "7.13 GB"
   }
 }

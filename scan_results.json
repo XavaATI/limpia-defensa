@@ -1,14 +1,14 @@
 {
-  "timestamp": "2026-09-02 13:39:53",
+  "timestamp": "2026-09-02 14:03:13",
   "gdrive_connected": true,
   "categories": {
     "caches": [
       {
         "name": "User Cache",
         "path": "/Users/xavasena/Library/Caches",
-        "size": 2088691853,
-        "size_str": "1.95 GB",
-        "files_count": 13967
+        "size": 2169826100,
+        "size_str": "2.02 GB",
+        "files_count": 16772
       },
       {
         "name": "System Cache",
@@ -25,6 +25,13 @@
         "size": 280798918,
         "size_str": "267.79 MB",
         "files_count": 7792
+      },
+      {
+        "name": "Homebrew Download Cache",
+        "path": "/Users/xavasena/Library/Caches/Homebrew",
+        "size": 76735078,
+        "size_str": "73.18 MB",
+        "files_count": 2558
       }
     ],
     "ai_model_caches": [
@@ -41,17 +48,17 @@
       {
         "name": "Google Chrome Cache",
         "path": "/Users/xavasena/Library/Caches/Google/Chrome",
-        "size": 116923587,
-        "size_str": "111.51 MB",
-        "files_count": 3746
+        "size": 121322972,
+        "size_str": "115.7 MB",
+        "files_count": 3993
       }
     ],
     "logs": [
       {
         "name": "User Logs",
         "path": "/Users/xavasena/Library/Logs",
-        "size": 864089,
-        "size_str": "843.84 KB",
+        "size": 920445,
+        "size_str": "898.87 KB",
         "files_count": 9
       },
       {
@@ -64,8 +71,8 @@
       {
         "name": "Unix System Logs",
         "path": "/var/log",
-        "size": 24988317,
-        "size_str": "23.83 MB",
+        "size": 25289714,
+        "size_str": "24.12 MB",
         "files_count": 28
       }
     ],
@@ -103,8 +110,8 @@
       {
         "name": "Codex",
         "path": "/Users/xavasena/Library/Application Support/Codex",
-        "size": 176661014,
-        "size_str": "168.48 MB"
+        "size": 170502242,
+        "size_str": "162.6 MB"
       },
       {
         "name": "homeenergyd",
@@ -255,7 +262,7 @@
   },
   "summary": {
     "total_size": 0,
-    "reclaimable_size": 7500241731,
-    "reclaimable_str": "6.99 GB"
+    "reclaimable_size": 7656709422,
+    "reclaimable_str": "7.13 GB"
   }
 }

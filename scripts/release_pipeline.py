@@ -233,7 +233,7 @@ def build_dist_tarball(new_version):
         new_lines = []
         for line in formula_lines:
             if line.strip().startswith("url "):
-                new_lines.append(f'  url "https://github.com/xavasena/limpia-defensa/archive/refs/tags/v{new_version}.tar.gz"\n')
+                new_lines.append(f'  url "https://github.com/XavaATI/limpia-defensa/releases/download/v{new_version}/limpia-defensa-v{new_version}.tar.gz"\n')
             elif line.strip().startswith("sha256 "):
                 new_lines.append(f'  sha256 "{tarball_sha256}"\n')
             else:

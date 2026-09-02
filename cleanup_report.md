@@ -1,21 +1,22 @@
 # ✊ Limpia-Defensa System Optimization Report
 
-**Scan Executed At**: `2026-09-02 13:39:53`  
+**Scan Executed At**: `2026-09-02 14:03:13`  
 **Google Drive Cloud Connection**: `CONNECTED (Active Staging Enabled)`  
-**Total Reclaimable SSD Space**: **6.99 GB**
+**Total Reclaimable SSD Space**: **7.13 GB**
 
 ## 🧹 Cleanup Categories Breakdown
 
 ### 🗄️ System & Application Caches
 | Cache Type | Path | File Count | Reclaimable Space |
 | :--- | :--- | :--- | :--- |
-| User Cache | `/Users/xavasena/Library/Caches` | 13967 | **1.95 GB** |
+| User Cache | `/Users/xavasena/Library/Caches` | 16772 | **2.02 GB** |
 | System Cache | `/Library/Caches` | 2 | **4.29 MB** |
 
 ### 🛠️ Developer & Package Caches
 | Cache Target | Path | File Count | Space |
 | :--- | :--- | :--- | :--- |
 | NPM Package Cache | `/Users/xavasena/.npm` | 7792 | **267.79 MB** |
+| Homebrew Download Cache | `/Users/xavasena/Library/Caches/Homebrew` | 2558 | **73.18 MB** |
 
 ### 🤖 AI & Machine Learning Model Caches
 | Model Framework | Path | File Count | Space |
@@ -28,14 +29,14 @@ Trash is empty.
 ### 🌐 Browser Caches
 | Browser | Path | File Count | Space |
 | :--- | :--- | :--- | :--- |
-| Google Chrome Cache | `/Users/xavasena/Library/Caches/Google/Chrome` | 3746 | **111.51 MB** |
+| Google Chrome Cache | `/Users/xavasena/Library/Caches/Google/Chrome` | 3993 | **115.7 MB** |
 
 ### 📝 System Log Buffers
 | Log Type | Path | File Count | Reclaimable Space |
 | :--- | :--- | :--- | :--- |
-| User Logs | `/Users/xavasena/Library/Logs` | 9 | **843.84 KB** |
+| User Logs | `/Users/xavasena/Library/Logs` | 9 | **898.87 KB** |
 | System Logs | `/Library/Logs` | 27 | **512.79 KB** |
-| Unix System Logs | `/var/log` | 28 | **23.83 MB** |
+| Unix System Logs | `/var/log` | 28 | **24.12 MB** |
 
 ### 📦 DMG / PKG Installers
 No leftover installers found.
@@ -46,7 +47,7 @@ No leftover installers found.
 | networkserviceproxy | `/Users/xavasena/Library/Application Support/networkserviceproxy` | **2.94 MB** |
 | DiskImages | `/Users/xavasena/Library/Application Support/DiskImages` | **1.0 KB** |
 | Animoji | `/Users/xavasena/Library/Application Support/Animoji` | **1.9 MB** |
-| Codex | `/Users/xavasena/Library/Application Support/Codex` | **168.48 MB** |
+| Codex | `/Users/xavasena/Library/Application Support/Codex` | **162.6 MB** |
 | homeenergyd | `/Users/xavasena/Library/Application Support/homeenergyd` | **0 B** |
 | Code | `/Users/xavasena/Library/Application Support/Code` | **1.42 GB** |
 | kotlin | `/Users/xavasena/Library/Application Support/kotlin` | **0 B** |

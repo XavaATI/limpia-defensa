@@ -1,12 +1,12 @@
 {
-  "version": "1.3.7",
-  "last_updated": "2026-09-02T19:40:41Z",
+  "version": "1.3.8",
+  "last_updated": "2026-09-02T20:03:03Z",
   "modules": [
     {
       "name": "limpia_defensa.py",
       "type": "cli_engine",
       "path": "scripts/limpia_defensa.py",
-      "sha256": "f50f6f890ed4d28db2e2fc2b467ffa7aec3d0d242444b9442e77ff48f1c269cb"
+      "sha256": "fa974cf480362675b316aad6c0c2f6f3c7ee42cfdfcc783304e0fad96f304b0a"
     },
     {
       "name": "LimpiaDefensaGUI.swift",
@@ -36,7 +36,7 @@
       "name": "release_pipeline.py",
       "type": "pipeline_engine",
       "path": "scripts/release_pipeline.py",
-      "sha256": "6b7b0b9aca707b32bd35332a64dd2e7b6903a78a47a13444600210753dd8d45e"
+      "sha256": "26a8c754f8189cdb08e941386bb5a97c6541bc4250bd0ab9e07573a8a974c247"
     },
     {
       "name": "verify_truth_and_excellence.py",

@@ -2455,6 +2455,7 @@ def main():
     patch_parser.add_argument("--bump", choices=["patch", "minor", "major"], default="patch", help="Semver level to bump (default: patch)")
     patch_parser.add_argument("--version", help="Explicit version override (e.g. 1.3.1)")
     patch_parser.add_argument("--skip-tests", action="store_true", help="Skip running Kali test suite")
+    patch_parser.add_argument("--publish", action="store_true", help="Publish release to GitHub and push formula to homebrew-colectivo")
     patch_parser.add_argument("--dry-run", action="store_true", help="Preview actions without modifying files")
 
     args = parser.parse_args()
@@ -2478,6 +2479,8 @@ def main():
             cmd.extend(["--version", args.version])
         if args.skip_tests:
             cmd.append("--skip-tests")
+        if args.publish:
+            cmd.append("--publish")
         if args.dry_run:
             cmd.append("--dry-run")
         res = subprocess.run(cmd)

@@ -207,6 +207,7 @@ def build_dist_tarball(new_version):
         "scripts/limpia-defensa-gui",
         "scripts/com.limpiadefensa.agent.plist",
         "scripts/kali_test_suite.py",
+        "scripts/verify_truth_and_excellence.py",
         "scripts/store_catalog.json",
         "scripts/release_pipeline.py",
         "scripts/limpia-defensa.rb",
@@ -273,7 +274,49 @@ def run_quality_gate():
         
     return True
 
-def run_pipeline(bump_type="patch", explicit_version=None, skip_tests=False, dry_run=False):
+def publish_to_github(new_version, tarball_path, tarball_sha):
+    step_banner(5, "Publishing Release to GitHub & Colectivo Homebrew Tap")
+    log(f"[*] Creating Git release tag v{new_version} and uploading {tarball_path}...", CYAN)
+    
+    # 1. Commit and tag limpia-defensa
+    try:
+        subprocess.run(["git", "add", "."], cwd=WORKSPACE_ROOT)
+        subprocess.run(["git", "commit", "-m", f"chore(release): v{new_version}"], cwd=WORKSPACE_ROOT)
+        subprocess.run(["git", "tag", "-a", f"v{new_version}", "-m", f"Release v{new_version}"], cwd=WORKSPACE_ROOT)
+        subprocess.run(["git", "push", "origin", "main", "--tags"], cwd=WORKSPACE_ROOT)
+    except Exception as e:
+        log(f"[-] Git push warning: {e}", YELLOW)
+        
+    # 2. GitHub Release creation via gh CLI
+    try:
+        release_cmd = [
+            "gh", "release", "create", f"v{new_version}", tarball_path,
+            "--repo", "XavaATI/limpia-defensa",
+            "--title", f"Limpia-Defensa v{new_version}",
+            "--notes", f"✊ Certified production release v{new_version} by Sena's AI Colectivo.\n\nSHA-256: `{tarball_sha}`"
+        ]
+        gh_proc = subprocess.run(release_cmd, capture_output=True, text=True)
+        if gh_proc.returncode == 0:
+            log(f"[+] GitHub release published: {gh_proc.stdout.strip()}", GREEN)
+        else:
+            log(f"[-] GitHub release creation note: {gh_proc.stderr.strip()}", YELLOW)
+    except Exception as e:
+        log(f"[-] gh release create note: {e}", YELLOW)
+
+    # 3. Synchronize homebrew-colectivo
+    tap_dir = os.path.join(os.path.dirname(WORKSPACE_ROOT), "homebrew-colectivo")
+    if os.path.exists(tap_dir):
+        try:
+            target_formula = os.path.join(tap_dir, "Formula", "limpia-defensa.rb")
+            shutil.copy2(FORMULA_PATH, target_formula)
+            subprocess.run(["git", "add", "Formula/limpia-defensa.rb"], cwd=tap_dir)
+            subprocess.run(["git", "commit", "-m", f"feat: bump limpia-defensa to v{new_version}"], cwd=tap_dir)
+            subprocess.run(["git", "push", "origin", "main"], cwd=tap_dir)
+            log(f"[+] Colectivo Homebrew Tap updated and pushed to XavaATI/homebrew-colectivo!", GREEN)
+        except Exception as e:
+            log(f"[-] Failed to push formula update to tap: {e}", YELLOW)
+
+def run_pipeline(bump_type="patch", explicit_version=None, skip_tests=False, dry_run=False, publish=False):
     curr_v = get_current_version()
     new_v = explicit_version if explicit_version else increment_semver(curr_v, bump_type)
     
@@ -310,6 +353,10 @@ def run_pipeline(bump_type="patch", explicit_version=None, skip_tests=False, dry
     else:
         log("[*] Skipping quality gate as requested (--skip-tests).", YELLOW)
         
+    # 5. Optional GitHub & Homebrew Tap Publication
+    if publish:
+        publish_to_github(new_v, tarball, sha256)
+
     duration = time.time() - start_time
     print(f"""\n{GREEN}====================================================================
 🎉 RELEASE v{new_v} PACKAGED AND CERTIFIED IN {duration:.1f}s!
@@ -326,10 +373,11 @@ def main():
     parser.add_argument("--bump", choices=["patch", "minor", "major"], default="patch", help="Semver component to bump")
     parser.add_argument("--version", help="Explicit version override (e.g. 1.3.1)")
     parser.add_argument("--skip-tests", action="store_true", help="Skip running Kali test suite")
+    parser.add_argument("--publish", action="store_true", help="Publish release to GitHub and push formula to homebrew-colectivo")
     parser.add_argument("--dry-run", action="store_true", help="Inspect planned actions without modifying files")
     
     args = parser.parse_args()
-    run_pipeline(bump_type=args.bump, explicit_version=args.version, skip_tests=args.skip_tests, dry_run=args.dry_run)
+    run_pipeline(bump_type=args.bump, explicit_version=args.version, skip_tests=args.skip_tests, dry_run=args.dry_run, publish=args.publish)
 
 if __name__ == "__main__":
     main()

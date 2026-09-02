@@ -143,6 +143,10 @@ struct MediaItem: Codable, Identifiable {
 
 struct ScanCategories: Codable {
     let caches: [CacheItem]
+    let developer_caches: [CacheItem]?
+    let ai_model_caches: [CacheItem]?
+    let trash: [CacheItem]?
+    let browser_caches: [CacheItem]?
     let logs: [LogItem]
     let installers: [InstallerItem]
     let duplicates: [DuplicateGroup]
@@ -366,9 +370,64 @@ struct VisualEffectView: NSViewRepresentable {
     func updateNSView(_ nsView: NSVisualEffectView, context: Context) {}
 }
 
+class HostingWindowView: NSView {
+    var callback: ((NSWindow) -> Void)?
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        if let window = self.window {
+            callback?(window)
+        }
+    }
+}
+
+struct WindowAccessor: NSViewRepresentable {
+    let callback: (NSWindow) -> Void
+    func makeNSView(context: Context) -> HostingWindowView {
+        let view = HostingWindowView()
+        view.callback = callback
+        return view
+    }
+    func updateNSView(_ nsView: HostingWindowView, context: Context) {}
+}
+
+class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        NSApp.setActivationPolicy(.regular)
+        NSApp.activate(ignoringOtherApps: true)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            self.positionOnPrimaryScreen()
+        }
+    }
+    
+    func positionOnPrimaryScreen() {
+        guard let screen = NSScreen.screens.first else { return }
+        let vf = screen.visibleFrame
+        let width: CGFloat = min(960, vf.width - 60)
+        let height: CGFloat = min(640, vf.height - 60)
+        let x = vf.origin.x + (vf.width - width) / 2
+        let y = vf.origin.y + (vf.height - height) / 2
+        let rect = NSRect(x: x, y: y, width: width, height: height)
+        
+        for window in NSApp.windows {
+            window.setFrame(rect, display: true, animate: false)
+            window.makeKeyAndOrderFront(nil)
+            window.orderFrontRegardless()
+        }
+        NSApp.activate(ignoringOtherApps: true)
+    }
+    
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        return true
+    }
+}
+
 @main
 struct LimpiaDefensaGUIApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
     init() {
+        NSApplication.shared.setActivationPolicy(.regular)
         LDPersistentLogger.shared.log(level: "INFO", message: "Core Application launching...")
     }
     
@@ -376,8 +435,14 @@ struct LimpiaDefensaGUIApp: App {
         WindowGroup {
             MainContainerView()
                 .preferredColorScheme(.dark)
+                .onAppear {
+                    NSApp.setActivationPolicy(.regular)
+                    NSApp.activate(ignoringOtherApps: true)
+                    appDelegate.positionOnPrimaryScreen()
+                }
         }
-        .windowStyle(.hiddenTitleBar)
+        .windowStyle(.titleBar)
+        .defaultSize(width: 960, height: 640)
     }
 }
 
@@ -397,7 +462,7 @@ struct MainContainerView: View {
     @State private var gdriveConnected = false
     
     // Selection and logs
-    @State private var selectedCategories: Set<String> = ["caches", "logs"]
+    @State private var selectedCategories: Set<String> = ["caches", "developer_caches", "logs", "trash"]
     @State private var consoleLog: String = ""
     @State private var errorMessage: String? = nil
     @State private var useSudo = false
@@ -477,6 +542,18 @@ struct MainContainerView: View {
             .frame(minWidth: 650, minHeight: 520)
         }
         .frame(minWidth: 850, minHeight: 550)
+        .background(WindowAccessor { window in
+            guard let screen = NSScreen.screens.first else { return }
+            let vf = screen.visibleFrame
+            let w: CGFloat = min(960, vf.width - 40)
+            let h: CGFloat = min(640, vf.height - 40)
+            let x = vf.origin.x + (vf.width - w) / 2
+            let y = vf.origin.y + (vf.height - h) / 2
+            window.setFrame(NSRect(x: x, y: y, width: w, height: h), display: true, animate: false)
+            window.makeKeyAndOrderFront(nil)
+            window.orderFrontRegardless()
+            NSApp.activate(ignoringOtherApps: true)
+        })
         .alert(item: Binding<AlertError?>(
             get: { errorMessage.map { AlertError(message: $0) } },
             set: { errorMessage = $0?.message }
@@ -532,21 +609,26 @@ struct MainContainerView: View {
         let task = Process()
         
         if elevate {
-            var scriptParts: [String] = []
-            scriptParts.append("quoted form of \"\(pythonPath)\"")
-            scriptParts.append("quoted form of \"\(scriptPath)\"")
-            for arg in args {
-                let escapedArg = arg
-                    .replacingOccurrences(of: "\\", with: "\\\\")
-                    .replacingOccurrences(of: "\"", with: "\\\"")
-                scriptParts.append("quoted form of \"\(escapedArg)\"")
-            }
-            
-            let appleScriptCommand = "do shell script \"HOME=/Users/xavasena \" & " + scriptParts.joined(separator: " & \" \" & ") + " with administrator privileges"
-            LDPersistentLogger.shared.log(level: "INFO", message: "Elevated command via osascript: \(appleScriptCommand)")
-            
             task.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
-            task.arguments = ["-e", appleScriptCommand]
+            
+            var osascriptArgs: [String] = [
+                "-e", "on run argv",
+                "-e", "    set cmd to \"cd \" & quoted form of \"" + getWorkspacePath() + "\" & \" && HOME=/Users/xavasena \"",
+                "-e", "    repeat with arg in argv",
+                "-e", "        set cmd to cmd & \" \" & quoted form of arg",
+                "-e", "    end repeat",
+                "-e", "    do shell script cmd with administrator privileges",
+                "-e", "end run"
+            ]
+            
+            osascriptArgs.append(pythonPath)
+            osascriptArgs.append(scriptPath)
+            osascriptArgs.append(contentsOf: args)
+            
+            task.arguments = osascriptArgs
+            
+            let loggedCmd = "HOME=/Users/xavasena " + ([pythonPath, scriptPath] + args).map { "'\($0.replacingOccurrences(of: "'", with: "'\\''"))'" }.joined(separator: " ")
+            LDPersistentLogger.shared.log(level: "INFO", message: "Elevated command via osascript (argv wrapper): \(loggedCmd)")
         } else {
             task.executableURL = URL(fileURLWithPath: pythonPath)
             task.arguments = [scriptPath] + args
@@ -1190,6 +1272,18 @@ struct DashboardView: View {
                         
                         VStack(spacing: 8) {
                             CategoryRow(name: "User & System Caches", count: results.categories.caches.count, size: formatBytes(results.categories.caches.reduce(0) { $0 + $1.size }))
+                            if let devCaches = results.categories.developer_caches, !devCaches.isEmpty {
+                                CategoryRow(name: "Developer Caches (NPM/Gradle/Pods)", count: devCaches.count, size: formatBytes(devCaches.reduce(0) { $0 + $1.size }))
+                            }
+                            if let aiCaches = results.categories.ai_model_caches, !aiCaches.isEmpty {
+                                CategoryRow(name: "AI Models & Weights (HF/Codex)", count: aiCaches.count, size: formatBytes(aiCaches.reduce(0) { $0 + $1.size }))
+                            }
+                            if let trash = results.categories.trash, !trash.isEmpty {
+                                CategoryRow(name: "User Trash Bin", count: trash.count, size: formatBytes(trash.reduce(0) { $0 + $1.size }))
+                            }
+                            if let browsers = results.categories.browser_caches, !browsers.isEmpty {
+                                CategoryRow(name: "Browser Caches (Chrome/Safari)", count: browsers.count, size: formatBytes(browsers.reduce(0) { $0 + $1.size }))
+                            }
                             CategoryRow(name: "Log Buffers", count: results.categories.logs.count, size: formatBytes(results.categories.logs.reduce(0) { $0 + $1.size }))
                             CategoryRow(name: "DMG/PKG Installers", count: results.categories.installers.count, size: formatBytes(results.categories.installers.reduce(0) { $0 + $1.size }))
                             CategoryRow(name: "Duplicate Clusters", count: results.categories.duplicates.count, size: formatBytes(results.categories.duplicates.reduce(0) { $0 + $1.size * Int64($1.paths.count - 1) }))
@@ -1318,6 +1412,14 @@ struct CleanupView: View {
         switch id {
         case "caches":
             bytes = results.categories.caches.reduce(0) { $0 + $1.size }
+        case "developer_caches":
+            bytes = results.categories.developer_caches?.reduce(0) { $0 + $1.size } ?? 0
+        case "ai_model_caches":
+            bytes = results.categories.ai_model_caches?.reduce(0) { $0 + $1.size } ?? 0
+        case "trash":
+            bytes = results.categories.trash?.reduce(0) { $0 + $1.size } ?? 0
+        case "browser_caches":
+            bytes = results.categories.browser_caches?.reduce(0) { $0 + $1.size } ?? 0
         case "logs":
             bytes = results.categories.logs.reduce(0) { $0 + $1.size }
         case "installers":
@@ -1366,12 +1468,48 @@ struct CleanupView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             CategoryCheckbox(
                                 id: "caches", 
-                                label: "Caches", 
-                                description: "User and system-level temp cache data", 
+                                label: "System & User Caches", 
+                                description: "User ~/Library/Caches and system cache data", 
                                 sizeStr: getCategorySizeStr(id: "caches"), 
                                 selected: $selectedCategories, 
                                 isCleaning: isCleaning && runningIndividualTask == "caches", 
                                 onCleanSingle: { triggerCleanSingle("caches") }
+                            )
+                            CategoryCheckbox(
+                                id: "developer_caches", 
+                                label: "Developer Build Caches", 
+                                description: "NPM, Gradle, CocoaPods, and Homebrew download caches", 
+                                sizeStr: getCategorySizeStr(id: "developer_caches"), 
+                                selected: $selectedCategories, 
+                                isCleaning: isCleaning && runningIndividualTask == "developer_caches", 
+                                onCleanSingle: { triggerCleanSingle("developer_caches") }
+                            )
+                            CategoryCheckbox(
+                                id: "ai_model_caches", 
+                                label: "AI Models & Weights", 
+                                description: "HuggingFace, Codex runtimes, and local model weights", 
+                                sizeStr: getCategorySizeStr(id: "ai_model_caches"), 
+                                selected: $selectedCategories, 
+                                isCleaning: isCleaning && runningIndividualTask == "ai_model_caches", 
+                                onCleanSingle: { triggerCleanSingle("ai_model_caches") }
+                            )
+                            CategoryCheckbox(
+                                id: "trash", 
+                                label: "Trash Bin", 
+                                description: "Files residing in ~/.Trash", 
+                                sizeStr: getCategorySizeStr(id: "trash"), 
+                                selected: $selectedCategories, 
+                                isCleaning: isCleaning && runningIndividualTask == "trash", 
+                                onCleanSingle: { triggerCleanSingle("trash") }
+                            )
+                            CategoryCheckbox(
+                                id: "browser_caches", 
+                                label: "Browser Caches", 
+                                description: "Chrome, Safari, Edge, and Arc disk caches", 
+                                sizeStr: getCategorySizeStr(id: "browser_caches"), 
+                                selected: $selectedCategories, 
+                                isCleaning: isCleaning && runningIndividualTask == "browser_caches", 
+                                onCleanSingle: { triggerCleanSingle("browser_caches") }
                             )
                             CategoryCheckbox(
                                 id: "logs", 

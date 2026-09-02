@@ -1,52 +1,152 @@
 {
-  "timestamp": "2026-06-30 20:10:36",
+  "timestamp": "2026-09-02 13:39:53",
   "gdrive_connected": true,
   "categories": {
     "caches": [
       {
+        "name": "User Cache",
+        "path": "/Users/xavasena/Library/Caches",
+        "size": 2088691853,
+        "size_str": "1.95 GB",
+        "files_count": 13967
+      },
+      {
         "name": "System Cache",
         "path": "/Library/Caches",
-        "size": 7456576,
-        "size_str": "7.11 MB",
+        "size": 4494624,
+        "size_str": "4.29 MB",
         "files_count": 2
+      }
+    ],
+    "developer_caches": [
+      {
+        "name": "NPM Package Cache",
+        "path": "/Users/xavasena/.npm",
+        "size": 280798918,
+        "size_str": "267.79 MB",
+        "files_count": 7792
+      }
+    ],
+    "ai_model_caches": [
+      {
+        "name": "Codex Runtime Cache",
+        "path": "/Users/xavasena/.cache/codex-runtimes",
+        "size": 2260144948,
+        "size_str": "2.1 GB",
+        "files_count": 29159
+      }
+    ],
+    "trash": [],
+    "browser_caches": [
+      {
+        "name": "Google Chrome Cache",
+        "path": "/Users/xavasena/Library/Caches/Google/Chrome",
+        "size": 116923587,
+        "size_str": "111.51 MB",
+        "files_count": 3746
       }
     ],
     "logs": [
       {
+        "name": "User Logs",
+        "path": "/Users/xavasena/Library/Logs",
+        "size": 864089,
+        "size_str": "843.84 KB",
+        "files_count": 9
+      },
+      {
         "name": "System Logs",
         "path": "/Library/Logs",
-        "size": 68460,
-        "size_str": "66.86 KB",
-        "files_count": 8
+        "size": 525097,
+        "size_str": "512.79 KB",
+        "files_count": 27
       },
       {
         "name": "Unix System Logs",
         "path": "/var/log",
-        "size": 26727223,
-        "size_str": "25.49 MB",
+        "size": 24988317,
+        "size_str": "23.83 MB",
         "files_count": 28
       }
     ],
     "installers": [],
-    "duplicates": [],
+    "duplicates": [
+      {
+        "size": 1750374,
+        "size_str": "1.67 MB",
+        "hash": "ab998b5a8873e563556557820409af83",
+        "paths": [
+          "/Users/xavasena/Downloads/Pre-App/SpineCapture/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/pgrC8qmCqhV_l5Cjf+XyfRIbV+I=",
+          "/Users/xavasena/Documents/Codex/2026-06-02/look-in-this-cloned-repo-and/modern-silent-sms-ping/work/android-sdk/cmdline-tools/latest/lib/external/org/jetbrains/kotlin/kotlin-stdlib/2.2.10/kotlin-stdlib-2.2.10.jar"
+        ]
+      }
+    ],
     "orphans": [
+      {
+        "name": "networkserviceproxy",
+        "path": "/Users/xavasena/Library/Application Support/networkserviceproxy",
+        "size": 3085480,
+        "size_str": "2.94 MB"
+      },
+      {
+        "name": "DiskImages",
+        "path": "/Users/xavasena/Library/Application Support/DiskImages",
+        "size": 1024,
+        "size_str": "1.0 KB"
+      },
       {
         "name": "Animoji",
         "path": "/Users/xavasena/Library/Application Support/Animoji",
-        "size": 382592,
-        "size_str": "373.62 KB"
+        "size": 1989392,
+        "size_str": "1.9 MB"
+      },
+      {
+        "name": "Codex",
+        "path": "/Users/xavasena/Library/Application Support/Codex",
+        "size": 176661014,
+        "size_str": "168.48 MB"
+      },
+      {
+        "name": "homeenergyd",
+        "path": "/Users/xavasena/Library/Application Support/homeenergyd",
+        "size": 0,
+        "size_str": "0 B"
+      },
+      {
+        "name": "Code",
+        "path": "/Users/xavasena/Library/Application Support/Code",
+        "size": 1529960456,
+        "size_str": "1.42 GB"
+      },
+      {
+        "name": "kotlin",
+        "path": "/Users/xavasena/Library/Application Support/kotlin",
+        "size": 0,
+        "size_str": "0 B"
       },
       {
         "name": "CrashReporter",
         "path": "/Users/xavasena/Library/Application Support/CrashReporter",
-        "size": 75024,
-        "size_str": "73.27 KB"
+        "size": 69200,
+        "size_str": "67.58 KB"
+      },
+      {
+        "name": "Chromium",
+        "path": "/Users/xavasena/Library/Application Support/Chromium",
+        "size": 0,
+        "size_str": "0 B"
       },
       {
         "name": "Knowledge",
         "path": "/Users/xavasena/Library/Application Support/Knowledge",
         "size": 0,
         "size_str": "0 B"
+      },
+      {
+        "name": "icdd",
+        "path": "/Users/xavasena/Library/Application Support/icdd",
+        "size": 1871,
+        "size_str": "1.83 KB"
       },
       {
         "name": "AddressBook",
@@ -59,6 +159,12 @@
         "path": "/Users/xavasena/Library/Application Support/FaceTime",
         "size": 0,
         "size_str": "0 B"
+      },
+      {
+        "name": "cloud-code",
+        "path": "/Users/xavasena/Library/Application Support/cloud-code",
+        "size": 36,
+        "size_str": "36.0 B"
       },
       {
         "name": "DifferentialPrivacy",
@@ -74,7 +180,14 @@
       }
     ],
     "vms": [],
-    "videos": [],
+    "videos": [
+      {
+        "name": "Cuba After Castro\uff1a The Island in the Crosshairs \uff5c Feature Documentary.mp4",
+        "path": "/Users/xavasena/Downloads/Cuba After Castro\uff1a The Island in the Crosshairs \uff5c Feature Documentary.mp4",
+        "size": 965269200,
+        "size_str": "920.55 MB"
+      }
+    ],
     "photos": [
       {
         "name": "Screenshot 2026-06-21 at 3.49.46\u202fPM.png",
@@ -95,17 +208,54 @@
         "size_str": "64.08 KB"
       },
       {
+        "name": "Screenshot 2026-08-31 at 2.51.03\u202fPM.png",
+        "path": "/Users/xavasena/Desktop/Screenshot 2026-08-31 at 2.51.03\u202fPM.png",
+        "size": 426659,
+        "size_str": "416.66 KB"
+      },
+      {
+        "name": "Screenshot 2026-08-27 at 3.04.07\u202fPM.png",
+        "path": "/Users/xavasena/Desktop/Screenshot 2026-08-27 at 3.04.07\u202fPM.png",
+        "size": 2671308,
+        "size_str": "2.55 MB"
+      },
+      {
+        "name": "Screenshot 2026-08-27 at 9.25.49\u202fAM.png",
+        "path": "/Users/xavasena/Desktop/Screenshot 2026-08-27 at 9.25.49\u202fAM.png",
+        "size": 310511,
+        "size_str": "303.23 KB"
+      },
+      {
         "name": "Screenshot 2026-06-21 at 3.49.51\u202fPM.png",
         "path": "/Users/xavasena/Desktop/Screenshot 2026-06-21 at 3.49.51\u202fPM.png",
         "size": 66440,
         "size_str": "64.88 KB"
+      },
+      {
+        "name": "Screenshot 2026-08-31 at 3.02.41\u202fPM.png",
+        "path": "/Users/xavasena/Desktop/Screenshot 2026-08-31 at 3.02.41\u202fPM.png",
+        "size": 465079,
+        "size_str": "454.18 KB"
+      },
+      {
+        "name": "Screenshot 2026-07-19 at 9.50.22\u202fAM.png",
+        "path": "/Users/xavasena/Desktop/Screenshot 2026-07-19 at 9.50.22\u202fAM.png",
+        "size": 54893,
+        "size_str": "53.61 KB"
       }
     ],
-    "archives": []
+    "archives": [
+      {
+        "name": "Initial Scene - 2026-08-29.zip",
+        "path": "/Users/xavasena/Downloads/Initial Scene - 2026-08-29.zip",
+        "size": 33413581,
+        "size_str": "31.87 MB"
+      }
+    ]
   },
   "summary": {
     "total_size": 0,
-    "reclaimable_size": 41390095,
-    "reclaimable_str": "39.47 MB"
+    "reclaimable_size": 7500241731,
+    "reclaimable_str": "6.99 GB"
   }
 }

@@ -1,0 +1,21 @@
+# OS metadata
+.DS_Store
+*.log
+
+# Python
+__pycache__/
+*.pyc
+
+# Builds and temporary artifacts
+build/
+dist/
+*.tar.gz
+LimpiaDefensa.app/
+
+# Colectivo sibling projects & non-repo assets
+ska-*
+*.mp4
+*.apk
+*.zip
+sentinelops*
+antigravity-manifest.json

@@ -8,6 +8,7 @@ import shutil
 import datetime
 import argparse
 import subprocess
+import platform
 from collections import defaultdict
 
 # ==============================================================================
@@ -125,6 +126,10 @@ def run_scan():
         "gdrive_connected": is_gdrive_active(),
         "categories": {
             "caches": [],
+            "developer_caches": [],
+            "ai_model_caches": [],
+            "trash": [],
+            "browser_caches": [],
             "logs": [],
             "installers": [],
             "duplicates": [],
@@ -140,12 +145,10 @@ def run_scan():
         }
     }
     
-    # 1. Caches Scan
+    # 1. System & App Caches Scan
     cache_dirs = [
         (os.path.join(USER_HOME, "Library/Caches"), "User Cache"),
-        ("/Library/Caches", "System Cache"),
-        (os.path.join(USER_HOME, "Library/Caches/Google/Chrome/Default/Cache"), "Chrome Cache"),
-        (os.path.join(USER_HOME, "Library/Caches/com.apple.Safari"), "Safari Cache")
+        ("/Library/Caches", "System Cache")
     ]
     for path, label in cache_dirs:
         if os.path.exists(path):
@@ -167,7 +170,117 @@ def run_scan():
                     "files_count": file_count
                 })
 
-    # 2. Logs Scan
+    # 2. Developer Build & Package Caches
+    dev_cache_dirs = [
+        (os.path.join(USER_HOME, ".npm"), "NPM Package Cache"),
+        (os.path.join(USER_HOME, ".gradle/caches"), "Gradle Daemon Caches"),
+        (os.path.join(USER_HOME, ".cargo/registry/cache"), "Rust Cargo Crate Cache"),
+        (os.path.join(USER_HOME, ".bun/install/cache"), "Bun Package Cache"),
+        (os.path.join(USER_HOME, ".pnpm-store"), "pnpm Store Cache"),
+        (os.path.join(USER_HOME, "Library/Developer/Xcode/DerivedData"), "Xcode DerivedData"),
+        (os.path.join(USER_HOME, "Library/Developer/Xcode/Archives"), "Xcode Build Archives"),
+        (os.path.join(USER_HOME, "Library/Developer/CoreSimulator/Caches"), "iOS CoreSimulator Cache"),
+        (os.path.join(USER_HOME, "Library/Caches/CocoaPods"), "CocoaPods Cache"),
+        (os.path.join(USER_HOME, "Library/Caches/Homebrew"), "Homebrew Download Cache")
+    ]
+    for path, label in dev_cache_dirs:
+        if os.path.exists(path):
+            size = 0
+            file_count = 0
+            for root, _, files in os.walk(path):
+                for f in files:
+                    try:
+                        size += os.path.getsize(os.path.join(root, f))
+                        file_count += 1
+                    except Exception:
+                        pass
+            if size > 0:
+                results["categories"]["developer_caches"].append({
+                    "name": label,
+                    "path": path,
+                    "size": size,
+                    "size_str": format_size(size),
+                    "files_count": file_count
+                })
+
+    # 3. AI & Machine Learning Model Caches
+    ai_cache_dirs = [
+        (os.path.join(USER_HOME, ".cache/huggingface"), "HuggingFace Transformers Cache"),
+        (os.path.join(USER_HOME, ".cache/codex-runtimes"), "Codex Runtime Cache"),
+        (os.path.join(USER_HOME, ".ollama/models"), "Ollama Local LLM Blobs"),
+        (os.path.join(USER_HOME, ".cache/torch"), "PyTorch Hub & Kernel Cache")
+    ]
+    for path, label in ai_cache_dirs:
+        if os.path.exists(path):
+            size = 0
+            file_count = 0
+            for root, _, files in os.walk(path):
+                for f in files:
+                    try:
+                        size += os.path.getsize(os.path.join(root, f))
+                        file_count += 1
+                    except Exception:
+                        pass
+            if size > 0:
+                results["categories"]["ai_model_caches"].append({
+                    "name": label,
+                    "path": path,
+                    "size": size,
+                    "size_str": format_size(size),
+                    "files_count": file_count
+                })
+
+    # 4. User Trash Bin
+    trash_dir = os.path.join(USER_HOME, ".Trash")
+    if os.path.exists(trash_dir):
+        size = 0
+        file_count = 0
+        for root, _, files in os.walk(trash_dir):
+            for f in files:
+                try:
+                    size += os.path.getsize(os.path.join(root, f))
+                    file_count += 1
+                except Exception:
+                    pass
+        if size > 0:
+            results["categories"]["trash"].append({
+                "name": "User Trash Bin",
+                "path": trash_dir,
+                "size": size,
+                "size_str": format_size(size),
+                "files_count": file_count
+            })
+
+    # 5. Dedicated Browser Caches
+    browser_dirs = [
+        (os.path.join(USER_HOME, "Library/Caches/Google/Chrome"), "Google Chrome Cache"),
+        (os.path.join(USER_HOME, "Library/Caches/com.apple.Safari"), "Safari Cache"),
+        (os.path.join(USER_HOME, "Library/Caches/Firefox"), "Mozilla Firefox Cache"),
+        (os.path.join(USER_HOME, "Library/Caches/BraveSoftware/Brave-Browser"), "Brave Browser Cache"),
+        (os.path.join(USER_HOME, "Library/Caches/company.thebrowser.Arc"), "Arc Browser Cache"),
+        (os.path.join(USER_HOME, "Library/Caches/Microsoft Edge"), "Microsoft Edge Cache")
+    ]
+    for path, label in browser_dirs:
+        if os.path.exists(path):
+            size = 0
+            file_count = 0
+            for root, _, files in os.walk(path):
+                for f in files:
+                    try:
+                        size += os.path.getsize(os.path.join(root, f))
+                        file_count += 1
+                    except Exception:
+                        pass
+            if size > 0:
+                results["categories"]["browser_caches"].append({
+                    "name": label,
+                    "path": path,
+                    "size": size,
+                    "size_str": format_size(size),
+                    "files_count": file_count
+                })
+
+    # 6. Logs Scan
     log_dirs = [
         (os.path.join(USER_HOME, "Library/Logs"), "User Logs"),
         ("/Library/Logs", "System Logs"),
@@ -194,13 +307,13 @@ def run_scan():
                     "files_count": file_count
                 })
 
-    # 3. Installers Scan
+    # 7. Installers Scan
     for s_dir in [os.path.join(USER_HOME, "Downloads"), os.path.join(USER_HOME, "Desktop")]:
         if os.path.exists(s_dir):
             try:
                 for item in os.listdir(s_dir):
                     item_path = os.path.join(s_dir, item)
-                    if os.path.isfile(item_path) and item.lower().endswith((".dmg", ".pkg")):
+                    if os.path.isfile(item_path) and item.lower().endswith((".dmg", ".pkg", ".iso")):
                         try:
                             size = os.path.getsize(item_path)
                             results["categories"]["installers"].append({
@@ -214,7 +327,7 @@ def run_scan():
             except Exception:
                 pass
 
-    # 4. Media Scan
+    # 8. Media Scan
     vm_exts = {".qcow2", ".utm", ".pvm", ".vdi", ".vmdk"}
     video_exts = {".mp4", ".mov", ".mkv", ".avi", ".m4v", ".webm", ".flv"}
     photo_exts = {".jpg", ".jpeg", ".png", ".heic", ".raw", ".tiff", ".gif"}
@@ -251,14 +364,14 @@ def run_scan():
                                 "size": size,
                                 "size_str": format_size(size)
                             })
-                        elif ext in photo_exts:
+                        elif ext in photo_exts and ("screenshot" in f.lower() or size >= 5 * 1024 * 1024):
                             results["categories"]["photos"].append({
                                 "name": f,
                                 "path": filepath,
                                 "size": size,
                                 "size_str": format_size(size)
                             })
-                        elif ext in archive_exts:
+                        elif ext in archive_exts and size >= 10 * 1024 * 1024:
                             results["categories"]["archives"].append({
                                 "name": f,
                                 "path": filepath,
@@ -268,12 +381,11 @@ def run_scan():
                     except Exception:
                         pass
 
-    # 5. Duplicates Scan (Files > 1MB)
+    # 9. Duplicates Scan (Files >= 1MB)
     files_by_size = defaultdict(list)
     for s_dir in SCAN_DIRECTORIES:
         if os.path.exists(s_dir):
             for root, _, files in os.walk(s_dir):
-                # Avoid hidden directories
                 if any(part.startswith('.') for part in root.split(os.sep)):
                     continue
                 for f in files:
@@ -282,7 +394,7 @@ def run_scan():
                     filepath = os.path.join(root, f)
                     try:
                         size = os.path.getsize(filepath)
-                        if size >= 1024 * 1024:  # Only check files >= 1MB for duplicates
+                        if size >= 1024 * 1024:
                             files_by_size[size].append(filepath)
                     except Exception:
                         pass
@@ -305,14 +417,13 @@ def run_scan():
                     })
     results["categories"]["duplicates"] = duplicate_groups
 
-    # 5. Orphans Scan
+    # 10. Orphans Scan
     results["categories"]["orphans"] = find_orphans()
 
     # Calculate Totals
     total_reclaimable = 0
     for cat, list_val in results["categories"].items():
         if cat == "duplicates":
-            # For duplicates, we keep the first one and delete the rest
             for group in list_val:
                 total_reclaimable += group["size"] * (len(group["paths"]) - 1)
         else:
@@ -323,8 +434,8 @@ def run_scan():
     results["summary"]["reclaimable_str"] = format_size(total_reclaimable)
     return results
 
-def generate_markdown_report(results, report_path):
-    with open(report_path, "w", encoding="utf-8") as f:
+def generate_markdown_report(results, output_path):
+    with open(output_path, "w", encoding="utf-8") as f:
         f.write("# ✊ Limpia-Defensa System Optimization Report\n\n")
         f.write(f"**Scan Executed At**: `{results['timestamp']}`  \n")
         f.write(f"**Google Drive Cloud Connection**: `{'CONNECTED (Active Staging Enabled)' if results['gdrive_connected'] else 'DISCONNECTED (Backup Dry-Run Only)'}`  \n")
@@ -334,7 +445,7 @@ def generate_markdown_report(results, report_path):
         
         # Caches
         f.write("### 🗄️ System & Application Caches\n")
-        caches = results["categories"]["caches"]
+        caches = results["categories"].get("caches", [])
         if not caches:
             f.write("No major caches indexed.\n")
         else:
@@ -343,10 +454,56 @@ def generate_markdown_report(results, report_path):
             for c in caches:
                 f.write(f"| {c['name']} | `{c['path']}` | {c['files_count']} | **{c['size_str']}** |\n")
         f.write("\n")
+
+        # Developer Caches
+        f.write("### 🛠️ Developer & Package Caches\n")
+        dev_caches = results["categories"].get("developer_caches", [])
+        if not dev_caches:
+            f.write("No developer build caches found.\n")
+        else:
+            f.write("| Cache Target | Path | File Count | Space |\n")
+            f.write("| :--- | :--- | :--- | :--- |\n")
+            for dc in dev_caches:
+                f.write(f"| {dc['name']} | `{dc['path']}` | {dc['files_count']} | **{dc['size_str']}** |\n")
+        f.write("\n")
+
+        # AI Model Caches
+        f.write("### 🤖 AI & Machine Learning Model Caches\n")
+        ai_caches = results["categories"].get("ai_model_caches", [])
+        if not ai_caches:
+            f.write("No local AI model caches found.\n")
+        else:
+            f.write("| Model Framework | Path | File Count | Space |\n")
+            f.write("| :--- | :--- | :--- | :--- |\n")
+            for ac in ai_caches:
+                f.write(f"| {ac['name']} | `{ac['path']}` | {ac['files_count']} | **{ac['size_str']}** |\n")
+        f.write("\n")
+
+        # Trash
+        f.write("### 🗑️ User Trash Bin\n")
+        trash_items = results["categories"].get("trash", [])
+        if not trash_items:
+            f.write("Trash is empty.\n")
+        else:
+            for t in trash_items:
+                f.write(f"- Size: **{t['size_str']}** ({t['files_count']} files) in `{t['path']}`\n")
+        f.write("\n")
+
+        # Browser Caches
+        f.write("### 🌐 Browser Caches\n")
+        browsers = results["categories"].get("browser_caches", [])
+        if not browsers:
+            f.write("No separate browser caches found.\n")
+        else:
+            f.write("| Browser | Path | File Count | Space |\n")
+            f.write("| :--- | :--- | :--- | :--- |\n")
+            for b in browsers:
+                f.write(f"| {b['name']} | `{b['path']}` | {b['files_count']} | **{b['size_str']}** |\n")
+        f.write("\n")
         
         # Logs
         f.write("### 📝 System Log Buffers\n")
-        logs = results["categories"]["logs"]
+        logs = results["categories"].get("logs", [])
         if not logs:
             f.write("No major logs indexed.\n")
         else:
@@ -358,19 +515,19 @@ def generate_markdown_report(results, report_path):
 
         # Installers
         f.write("### 📦 DMG / PKG Installers\n")
-        installers = results["categories"]["installers"]
+        installers = results["categories"].get("installers", [])
         if not installers:
             f.write("No leftover installers found.\n")
         else:
             f.write("| Installer Name | Path | File Size |\n")
-            f.write("| :--- | :--- | :--- |\n")
+            f.write("| :--- | :--- | :--- | :--- |\n")
             for inst in installers:
                 f.write(f"| {inst['name']} | `{inst['path']}` | **{inst['size_str']}** |\n")
         f.write("\n")
 
         # Orphans
         f.write("### 📱 Orphaned App Support Folders\n")
-        orphans = results["categories"]["orphans"]
+        orphans = results["categories"].get("orphans", [])
         if not orphans:
             f.write("No orphaned application support folders found.\n")
         else:
@@ -430,7 +587,7 @@ def generate_markdown_report(results, report_path):
 
         # Duplicates
         f.write("### 📦 True Duplicate Clusters (Keep 1 copy)\n")
-        dupes = results["categories"]["duplicates"]
+        dupes = results["categories"].get("duplicates", [])
         if not dupes:
             f.write("No identical duplicate clusters found.\n")
         else:
@@ -474,6 +631,18 @@ def stage_file_to_backup(source_path, category, run_date, backup_type, backup_pa
     try:
         hashed_key = hashlib.sha256(source_path.encode()).hexdigest()
         
+        # Disposable cache categories skip expensive zip compression
+        if category in ["caches", "developer_caches", "ai_model_caches", "browser_caches", "trash", "logs"]:
+            if manifest is not None:
+                manifest["files"][hashed_key] = {
+                    "original_path": source_path,
+                    "type": "directory" if os.path.isdir(source_path) else "file",
+                    "checksum": "disposable-cache",
+                    "size": 0,
+                    "category": category
+                }
+            return True
+
         if os.path.isdir(source_path):
             temp_zip_base = os.path.join("/tmp", f"zip_{hashed_key}")
             temp_zip_file = temp_zip_base + ".zip"
@@ -573,10 +742,15 @@ def perform_clean(results_json_path, categories_list, backup_type, backup_path, 
     deleted_paths = []
     failed_paths = []
 
-    for category in ["caches", "logs", "installers", "orphans", "vms", "videos", "photos", "archives"]:
+    for category in [
+        "caches", "developer_caches", "ai_model_caches", "trash", "browser_caches",
+        "logs", "installers", "orphans", "vms", "videos", "photos", "archives"
+    ]:
         if category in categories_list:
             for entry in results["categories"].get(category, []):
                 path = entry["path"]
+                if not os.path.exists(path):
+                    continue
                 is_system_path = path.startswith(("/Library", "/var/log"))
                 if is_system_path and not use_sudo:
                     print(f"⏭️ Skipping system-level path (run with --sudo to clean): {path}")
@@ -586,10 +760,25 @@ def perform_clean(results_json_path, categories_list, backup_type, backup_path, 
                 if stage_file_to_backup(path, category, run_date, backup_type, backup_path, encrypt, passphrase, manifest):
                     try:
                         if os.path.isdir(path):
-                            if use_sudo and is_system_path:
-                                subprocess.run(["sudo", "rm", "-rf", path], check=True)
+                            if category in ["caches", "developer_caches", "ai_model_caches", "trash", "browser_caches"]:
+                                # Prune contents inside the cache/trash directory to preserve directory mount
+                                if use_sudo and is_system_path:
+                                    subprocess.run(f"sudo rm -rf '{path}'/* '{path}'/.[!.]* 2>/dev/null || true", shell=True, check=False)
+                                else:
+                                    for child in os.listdir(path):
+                                        child_path = os.path.join(path, child)
+                                        try:
+                                            if os.path.isdir(child_path):
+                                                shutil.rmtree(child_path, ignore_errors=True)
+                                            else:
+                                                os.remove(child_path)
+                                        except Exception:
+                                            pass
                             else:
-                                shutil.rmtree(path, ignore_errors=True)
+                                if use_sudo and is_system_path:
+                                    subprocess.run(["sudo", "rm", "-rf", path], check=True)
+                                else:
+                                    shutil.rmtree(path, ignore_errors=True)
                         else:
                             if use_sudo and is_system_path:
                                 subprocess.run(["sudo", "rm", "-f", path], check=True)
@@ -665,15 +854,125 @@ def run_av_scan(threat_db_path=None):
 
     av_results = {
         "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "vectors_scanned": [
+            "Process Memory & Disguised Daemons",
+            "Reverse Shells & Remote Sockets",
+            "LaunchAgents & LaunchDaemons Persistence",
+            "Shell Startup Profiles & Injections",
+            "Cron & Periodic Tasks",
+            "Keychain & Stealer Heuristics",
+            "Network Listeners & Open Ports",
+            "Unsigned Binaries in Staging Dirs",
+            "Cryptominer Signatures"
+        ],
         "threats_found": [],
         "suspicious_items": [],
         "summary": {
             "total_threats": 0,
-            "total_suspicious": 0
+            "total_suspicious": 0,
+            "critical_count": 0,
+            "high_count": 0,
+            "medium_count": 0
         }
     }
 
-    # 1. Scan Launch Agents and Launch Daemons (Common Persistence Vectors)
+    # --------------------------------------------------------------------------
+    # VECTOR 1: ACTIVE PROCESS MEMORY & BEHAVIORAL SWEEPS
+    # --------------------------------------------------------------------------
+    try:
+        ps_proc = subprocess.run(
+            ["ps", "-eo", "pid,ppid,%cpu,%mem,comm,args"],
+            capture_output=True,
+            text=True
+        )
+        if ps_proc.returncode == 0:
+            lines = ps_proc.stdout.strip().split("\n")
+            header = lines[0] if lines else ""
+            for line in lines[1:]:
+                parts = line.strip().split(None, 5)
+                if len(parts) < 6:
+                    continue
+                pid_str, ppid_str, cpu_str, mem_str, comm, args = parts
+                pid = int(pid_str) if pid_str.isdigit() else 0
+                if pid <= 1:
+                    continue
+
+                args_lower = args.lower()
+                comm_lower = comm.lower()
+
+                # A. Reverse Shell Heuristic
+                rev_shell_patterns = [
+                    "import socket,subprocess,os;s=socket.socket",
+                    "socket.socket(socket.af_inet",
+                    "nc -e /bin/",
+                    "ncat -e /bin/",
+                    "bash -i >& /dev/tcp/",
+                    "zsh -i >& /dev/tcp/",
+                    "/bin/sh -i >& /dev/tcp/",
+                    "base64 -d | sh",
+                    "base64 -d | bash",
+                    "base64 -d | zsh"
+                ]
+                for pat in rev_shell_patterns:
+                    if pat in args:
+                        av_results["threats_found"].append({
+                            "name": os.path.basename(comm),
+                            "path": comm,
+                            "pid": pid,
+                            "type": "Interactive Reverse Shell Execution",
+                            "severity": "CRITICAL",
+                            "sha256": get_file_sha256(comm) or "N/A",
+                            "reason": f"Active process PID {pid} is running reverse shell payload: '{pat}'"
+                        })
+
+                # B. Masquerading Daemon Names
+                disguised_names = ["launchd", "windowserver", "kernel_task", "mdworker", "syslogd", "opendirectoryd"]
+                base_comm = os.path.basename(comm)
+                if base_comm in disguised_names:
+                    # Valid system daemons live in /System, /usr/libexec, /usr/sbin, /sbin
+                    if not comm.startswith(("/System", "/usr/libexec", "/usr/sbin", "/sbin", "/usr/bin")):
+                        av_results["threats_found"].append({
+                            "name": base_comm,
+                            "path": comm,
+                            "pid": pid,
+                            "type": "Disguised System Daemon Masquerade",
+                            "severity": "CRITICAL",
+                            "sha256": get_file_sha256(comm) or "N/A",
+                            "reason": f"Process {base_comm} running from non-system location '{comm}'"
+                        })
+
+                # C. Execution from Temp or Staging Directories
+                if comm.startswith(("/tmp/", "/var/tmp/", "/dev/shm/")):
+                    sha256 = get_file_sha256(comm)
+                    av_results["threats_found"].append({
+                        "name": base_comm,
+                        "path": comm,
+                        "pid": pid,
+                        "type": "Active Binary in Volatile Temp Directory",
+                        "severity": "HIGH",
+                        "sha256": sha256 or "N/A",
+                        "reason": f"Active process PID {pid} is executing binary located inside volatile directory '{comm}'"
+                    })
+
+                # D. Cryptominer Signatures
+                miner_keywords = ["xmrig", "stratum+tcp://", "stratum+ssl://", "minergate", "hashvault.pro", "cryptonight", "moneroocean"]
+                for mk in miner_keywords:
+                    if mk in args_lower:
+                        av_results["threats_found"].append({
+                            "name": base_comm,
+                            "path": comm,
+                            "pid": pid,
+                            "type": "Cryptocurrency Mining Process",
+                            "severity": "CRITICAL",
+                            "sha256": get_file_sha256(comm) or "N/A",
+                            "reason": f"Process PID {pid} contains mining connection argument: '{mk}'"
+                        })
+    except Exception as e:
+        print(f"Process memory audit exception: {e}")
+
+    # --------------------------------------------------------------------------
+    # VECTOR 2: LAUNCH AGENTS & LAUNCH DAEMONS PERSISTENCE
+    # --------------------------------------------------------------------------
     persistence_dirs = [
         "/Library/LaunchAgents",
         "/Library/LaunchDaemons",
@@ -685,65 +984,215 @@ def run_av_scan(threat_db_path=None):
                 for item in os.listdir(p_dir):
                     item_path = os.path.join(p_dir, item)
                     if os.path.isfile(item_path) and item.endswith(".plist"):
-                        # Parse plist content for suspect execution scripts
+                        is_threat = False
                         is_suspicious = False
-                        reason = []
+                        reasons = []
+                        severity = "LOW"
                         
-                        # Read contents as text to check commands
                         try:
-                            with open(item_path, "r", encoding="utf-8", errors="ignore") as pf:
-                                content = pf.read()
-                                
-                            # Adware patterns
-                            suspicious_keywords = ["curl", "wget", "chmod", "sh ", "bash", "/tmp/", "python", "eval"]
-                            for kw in suspicious_keywords:
-                                if kw in content:
+                            # 1. Hash audit against threat DB
+                            sha256 = get_file_sha256(item_path)
+                            if sha256 and sha256 in threat_hashes:
+                                is_threat = True
+                                severity = "CRITICAL"
+                                reasons.append("Matches known hash signature in threat database")
+
+                            # 2. Parse plist content
+                            with open(item_path, "rb") as pf:
+                                try:
+                                    import plistlib
+                                    plist_data = plistlib.load(pf)
+                                    prog_args = plist_data.get("ProgramArguments", [])
+                                    prog = plist_data.get("Program", "")
+                                    all_cmd_strings = [str(prog)] + [str(a) for a in prog_args]
+                                    joined_cmd = " ".join(all_cmd_strings)
+                                except Exception:
+                                    pf.seek(0)
+                                    joined_cmd = pf.read().decode("utf-8", errors="ignore")
+
+                            # Suspicious command checks with word boundaries
+                            if any(re_kw in joined_cmd for re_kw in ["curl ", "wget ", "base64 -d", "base64 --decode", "nc -e", "/tmp/"]):
+                                if "base64" in joined_cmd or "/tmp/" in joined_cmd:
+                                    is_threat = True
+                                    severity = "HIGH"
+                                    reasons.append(f"Persistence script executes suspicious commands from tmp/base64: {joined_cmd[:100]}")
+                                else:
                                     is_suspicious = True
-                                    reason.append(f"Contains execution keyword: '{kw}'")
+                                    severity = "MEDIUM"
+                                    reasons.append(f"Persistence script downloads/executes network scripts: {joined_cmd[:100]}")
+                                    
+                            if "security find-generic-password" in joined_cmd or "security dump-keychain" in joined_cmd:
+                                is_threat = True
+                                severity = "CRITICAL"
+                                reasons.append("Attempts to harvest Keychain credentials via security command")
+
+                            if is_threat:
+                                av_results["threats_found"].append({
+                                    "name": item,
+                                    "path": item_path,
+                                    "type": "Malicious Launch Persistence Daemon",
+                                    "severity": severity,
+                                    "sha256": sha256 or "Unknown",
+                                    "reason": "; ".join(reasons)
+                                })
+                            elif is_suspicious:
+                                av_results["suspicious_items"].append({
+                                    "name": item,
+                                    "path": item_path,
+                                    "type": "Suspicious Launch Persistence Item",
+                                    "severity": severity,
+                                    "sha256": sha256 or "Unknown",
+                                    "reason": "; ".join(reasons)
+                                })
                         except Exception:
                             pass
-                            
-                        # Hash audit
-                        sha256 = get_file_sha256(item_path)
-                        if sha256 and sha256 in threat_hashes:
-                            av_results["threats_found"].append({
-                                "name": item,
-                                "path": item_path,
-                                "type": "Malicious Persistence Agent",
-                                "sha256": sha256,
-                                "reason": "Matches known signature in threat-db"
-                            })
-                        elif is_suspicious:
-                            av_results["suspicious_items"].append({
-                                "name": item,
-                                "path": item_path,
-                                "type": "Suspicious Persistence Agent",
-                                "sha256": sha256 or "Unknown",
-                                "reason": ", ".join(reason)
-                            })
             except Exception:
                 pass
 
-    # 2. Check Crontab
+    # --------------------------------------------------------------------------
+    # VECTOR 3: SHELL STARTUP PROFILES & INJECTIONS
+    # --------------------------------------------------------------------------
+    shell_rc_files = [
+        os.path.join(USER_HOME, ".zshrc"),
+        os.path.join(USER_HOME, ".zshenv"),
+        os.path.join(USER_HOME, ".zprofile"),
+        os.path.join(USER_HOME, ".bashrc"),
+        os.path.join(USER_HOME, ".bash_profile"),
+        os.path.join(USER_HOME, ".profile"),
+        "/etc/zshrc",
+        "/etc/zprofile",
+        "/etc/profile",
+        "/etc/bashrc"
+    ]
+    for rc in shell_rc_files:
+        if os.path.exists(rc):
+            try:
+                with open(rc, "r", encoding="utf-8", errors="ignore") as rf:
+                    lines = rf.readlines()
+                for idx, line in enumerate(lines):
+                    line_str = line.strip()
+                    if not line_str or line_str.startswith("#"):
+                        continue
+                    
+                    # Heuristics for malicious shell injections
+                    if "curl " in line_str and ("| sh" in line_str or "| bash" in line_str or "| zsh" in line_str):
+                        av_results["threats_found"].append({
+                            "name": f"{os.path.basename(rc)} (Line {idx+1})",
+                            "path": rc,
+                            "type": "Shell Profile Piped Network Execution Hook",
+                            "severity": "HIGH",
+                            "sha256": get_file_sha256(rc) or "N/A",
+                            "reason": f"Auto-executes remote script: {line_str[:120]}"
+                        })
+                    elif "base64 -d" in line_str and ("sh" in line_str or "eval" in line_str):
+                        av_results["threats_found"].append({
+                            "name": f"{os.path.basename(rc)} (Line {idx+1})",
+                            "path": rc,
+                            "type": "Obfuscated Base64 Shell Hook",
+                            "severity": "CRITICAL",
+                            "sha256": get_file_sha256(rc) or "N/A",
+                            "reason": f"Contains obfuscated evaluation command: {line_str[:120]}"
+                        })
+                    elif "DYLD_INSERT_LIBRARIES" in line_str or "DYLD_LIBRARY_PATH" in line_str:
+                        av_results["suspicious_items"].append({
+                            "name": f"{os.path.basename(rc)} (Line {idx+1})",
+                            "path": rc,
+                            "type": "Dynamic Library (DYLD) Injection Variable",
+                            "severity": "HIGH",
+                            "sha256": get_file_sha256(rc) or "N/A",
+                            "reason": f"Overrides macOS dynamic linker: {line_str[:120]}"
+                        })
+            except Exception:
+                pass
+
+    # --------------------------------------------------------------------------
+    # VECTOR 4: CRON & PERIODIC SYSTEM TASKS
+    # --------------------------------------------------------------------------
     try:
         cron_proc = subprocess.run(["crontab", "-l"], capture_output=True, text=True)
         if cron_proc.returncode == 0 and cron_proc.stdout.strip():
             cron_lines = cron_proc.stdout.strip().split("\n")
             for idx, line in enumerate(cron_lines):
-                if line.strip() and not line.strip().startswith("#"):
-                    # Check for curl / bash execution
-                    if any(kw in line for kw in ["curl", "wget", "sh", "bash", "python", "/tmp"]):
+                line_clean = line.strip()
+                if line_clean and not line_clean.startswith("#"):
+                    if any(kw in line_clean for kw in ["curl", "wget", "base64", "sh", "bash", "python", "/tmp"]):
                         av_results["suspicious_items"].append({
-                            "name": f"Crontab Line {idx+1}",
-                            "path": "User Crontab Configuration",
-                            "type": "Suspicious Cron Task",
+                            "name": f"User Crontab Task {idx+1}",
+                            "path": "crontab",
+                            "type": "Automated Cron Task",
+                            "severity": "MEDIUM",
                             "sha256": "N/A",
-                            "reason": f"Active execution command: {line}"
+                            "reason": f"Active execution command: {line_clean}"
                         })
     except Exception:
         pass
 
-    # 3. Check High-Risk Execution Directories (tmp, Downloads, Desktop)
+    periodic_dirs = ["/etc/periodic/daily", "/etc/periodic/weekly", "/etc/periodic/monthly"]
+    for pdir in periodic_dirs:
+        if os.path.exists(pdir):
+            try:
+                for item in os.listdir(pdir):
+                    p_path = os.path.join(pdir, item)
+                    if os.path.isfile(p_path) and not item.startswith("."):
+                        # Check if non-standard system periodic task
+                        standard_tasks = ["100.clean-logs", "130.clean-rwho", "140.clean-httpd", "199.clean-fax", "300.biweekly", "400.status-disks"]
+                        if item not in standard_tasks:
+                            av_results["suspicious_items"].append({
+                                "name": item,
+                                "path": p_path,
+                                "type": "Custom Periodic Maintenance Script",
+                                "severity": "LOW",
+                                "sha256": get_file_sha256(p_path) or "N/A",
+                                "reason": f"Non-default periodic script located in '{pdir}'"
+                            })
+            except Exception:
+                pass
+
+    # --------------------------------------------------------------------------
+    # VECTOR 5: NETWORK LISTENERS & OPEN PORTS
+    # --------------------------------------------------------------------------
+    try:
+        lsof_proc = subprocess.run(
+            ["lsof", "-iTCP", "-sTCP:LISTEN", "-n", "-P"],
+            capture_output=True,
+            text=True
+        )
+        if lsof_proc.returncode == 0:
+            lines = lsof_proc.stdout.strip().split("\n")
+            for line in lines[1:]:
+                parts = line.split()
+                if len(parts) >= 9:
+                    comm_name = parts[0]
+                    pid_str = parts[1]
+                    user_str = parts[2]
+                    port_str = parts[8]
+                    pid = int(pid_str) if pid_str.isdigit() else 0
+                    
+                    # Flag listeners running from /tmp or volatile paths
+                    try:
+                        bin_proc = subprocess.run(["ps", "-p", str(pid), "-o", "comm="], capture_output=True, text=True)
+                        bin_path = bin_proc.stdout.strip()
+                        if bin_path.startswith(("/tmp/", "/var/tmp/", "/Users/")):
+                            # Check if signed
+                            cs = subprocess.run(["codesign", "-v", bin_path], capture_output=True)
+                            if cs.returncode != 0 and not bin_path.endswith(("/node", "/python3", "/limpia-defensa-gui")):
+                                av_results["suspicious_items"].append({
+                                    "name": f"{comm_name} (Port {port_str})",
+                                    "path": bin_path,
+                                    "pid": pid,
+                                    "type": "Unsigned User-Space Network Listener",
+                                    "severity": "HIGH",
+                                    "sha256": get_file_sha256(bin_path) or "N/A",
+                                    "reason": f"Unsigned binary listening on port {port_str} executed by {user_str}"
+                                })
+                    except Exception:
+                        pass
+    except Exception:
+        pass
+
+    # --------------------------------------------------------------------------
+    # VECTOR 6: HIGH-RISK ENTRY DIRECTORIES & CODE SIGNATURES
+    # --------------------------------------------------------------------------
     high_risk_dirs = [
         "/tmp",
         os.path.join(USER_HOME, "Downloads"),
@@ -755,12 +1204,10 @@ def run_av_scan(threat_db_path=None):
                 for item in os.listdir(h_dir):
                     item_path = os.path.join(h_dir, item)
                     if os.path.isfile(item_path) and not item.startswith("."):
-                        # Check if file has executable permissions
                         try:
                             stat_info = os.stat(item_path)
                             is_executable = (stat_info.st_mode & 0o111) != 0
                             
-                            # Alternatively check header for shebang
                             is_script = False
                             if not is_executable:
                                 with open(item_path, "rb") as f:
@@ -769,7 +1216,6 @@ def run_av_scan(threat_db_path=None):
                                         is_script = True
                                         
                             if is_executable or is_script:
-                                # Run codesign check to see if it is signed
                                 is_signed = False
                                 try:
                                     cs_proc = subprocess.run(["codesign", "-v", item_path], capture_output=True)
@@ -778,32 +1224,42 @@ def run_av_scan(threat_db_path=None):
                                 except Exception:
                                     pass
                                     
-                                if not is_signed:
-                                    # Flag unsigned executable/script in high risk directory
-                                    sha256 = get_file_sha256(item_path)
-                                    if sha256 and sha256 in threat_hashes:
-                                        av_results["threats_found"].append({
-                                            "name": item,
-                                            "path": item_path,
-                                            "type": "Malicious Unsigned Executable",
-                                            "sha256": sha256,
-                                            "reason": "Matches known signature in threat-db"
-                                        })
-                                    else:
-                                        av_results["suspicious_items"].append({
-                                            "name": item,
-                                            "path": item_path,
-                                            "type": "Unsigned Executable / Script in entry folder",
-                                            "sha256": sha256 or "Unknown",
-                                            "reason": "Unsigned file with execution privileges in high-risk folder"
-                                        })
+                                sha256 = get_file_sha256(item_path)
+                                if sha256 and sha256 in threat_hashes:
+                                    av_results["threats_found"].append({
+                                        "name": item,
+                                        "path": item_path,
+                                        "type": "Known Malicious Signature Binary",
+                                        "severity": "CRITICAL",
+                                        "sha256": sha256,
+                                        "reason": "Matches known signature in threat database"
+                                    })
+                                elif not is_signed and not item_path.endswith((".py", ".sh", ".swift")):
+                                    av_results["suspicious_items"].append({
+                                        "name": item,
+                                        "path": item_path,
+                                        "type": "Unsigned Executable in High-Risk Folder",
+                                        "severity": "LOW",
+                                        "sha256": sha256 or "Unknown",
+                                        "reason": "Unsigned binary file with execution privileges in staging folder"
+                                    })
                         except Exception:
                             pass
             except Exception:
                 pass
 
+    # Summarize severities
     av_results["summary"]["total_threats"] = len(av_results["threats_found"])
     av_results["summary"]["total_suspicious"] = len(av_results["suspicious_items"])
+    for t in av_results["threats_found"] + av_results["suspicious_items"]:
+        sev = t.get("severity", "LOW")
+        if sev == "CRITICAL":
+            av_results["summary"]["critical_count"] += 1
+        elif sev == "HIGH":
+            av_results["summary"]["high_count"] += 1
+        elif sev == "MEDIUM":
+            av_results["summary"]["medium_count"] += 1
+
     return av_results
 
 def load_manifest(backup_date, backup_type, backup_path, passphrase=None):
@@ -1075,7 +1531,17 @@ def perform_quarantine(filepath, pid, backup_type, backup_path, encrypt=False, p
         except Exception as e:
             print(f"❌ Failed to save quarantine manifest: {e}")
 
-    # 2. Terminate PID
+    # 2. Unload LaunchAgent/Daemon if applicable
+    if filepath.endswith(".plist") and ("LaunchAgents" in filepath or "LaunchDaemons" in filepath):
+        print(f"🛑 Unloading Launch Daemon/Agent: {filepath}")
+        try:
+            subprocess.run(["launchctl", "unload", filepath], capture_output=True)
+            subprocess.run(["launchctl", "bootout", f"gui/{os.getuid()}", filepath], capture_output=True)
+            print(f"✅ Unloaded launchd service: {filepath}")
+        except Exception as e:
+            print(f"⚠️ launchctl unload note: {e}")
+
+    # 3. Terminate PID
     if pid > 0:
         print(f"🛑 Terminating process PID {pid}...")
         terminated = False
@@ -1108,12 +1574,11 @@ def perform_quarantine(filepath, pid, backup_type, backup_path, encrypt=False, p
                     print(f"ℹ️ Process {pid} has exited.")
                     break
                 except PermissionError:
-                    # Process still exists, but we lack permissions to signal it.
                     time.sleep(0.1)
             else:
                 print(f"⚠️ Process {pid} did not exit within 3 seconds.")
 
-    # 3. Delete binary from disk
+    # 4. Delete binary from disk
     if os.path.exists(filepath):
         print(f"🗑️ Deleting file from disk: {filepath}")
         delete_success = False
@@ -1144,15 +1609,141 @@ def perform_quarantine(filepath, pid, backup_type, backup_path, encrypt=False, p
 # ENTERPRISE REST API & DIAGNOSTICS ENGINES
 # ==============================================================================
 import http.server
+import socketserver
+import threading
 import urllib.parse
 import traceback
 import tempfile
 
+def get_doctor_report():
+    issues = []
+    
+    # 1. Python Environment
+    py_ver = sys.version.split()[0]
+    py_ok = sys.version_info >= (3, 10)
+    if not py_ok:
+        issues.append("Upgrade Python to 3.10 or higher")
+
+    # 2. Operating System & Architecture
+    arch = platform.machine()
+    sw_vers = "macOS"
+    try:
+        sw_proc = subprocess.run(["sw_vers", "-productVersion"], capture_output=True, text=True)
+        if sw_proc.returncode == 0:
+            sw_vers = f"macOS {sw_proc.stdout.strip()}"
+    except Exception:
+        pass
+    
+    # 3. Swift Compiler
+    swiftc_ok = False
+    v_line = "Not Found"
+    try:
+        sc_proc = subprocess.run(["swiftc", "--version"], capture_output=True, text=True)
+        if sc_proc.returncode == 0:
+            v_line = sc_proc.stdout.split("\n")[0]
+            swiftc_ok = True
+    except Exception:
+        pass
+    if not swiftc_ok:
+        issues.append("Install Xcode Command Line Tools: xcode-select --install")
+        
+    # 4. Binary Code Signatures
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    workspace_root = os.path.dirname(script_dir)
+    gui_binary = os.path.join(script_dir, "limpia-defensa-gui")
+    app_bundle = os.path.join(workspace_root, "LimpiaDefensa.app")
+    
+    gui_status = "MISSING"
+    if os.path.exists(gui_binary):
+        cs = subprocess.run(["codesign", "-v", gui_binary], capture_output=True)
+        gui_status = "SIGNED" if cs.returncode == 0 else "UNSIGNED_OR_MODIFIED"
+        if cs.returncode != 0:
+            issues.append("Re-sign GUI binary via 'python3 scripts/limpia_defensa.py patch-release'")
+    else:
+        issues.append("Compile GUI binary: 'python3 scripts/limpia_defensa.py patch-release'")
+        
+    app_status = "NOT_ASSEMBLED"
+    if os.path.exists(app_bundle):
+        app_cs = subprocess.run(["codesign", "-v", app_bundle], capture_output=True)
+        app_status = "SIGNED" if app_cs.returncode == 0 else "UNSIGNED"
+
+    # 5. Store Catalog Integrity
+    catalog_path = os.path.join(script_dir, "store_catalog.json")
+    chk = run_store_check(catalog_path) if os.path.exists(catalog_path) else {"integrity_passed": False, "catalog_version": "0.0.0"}
+    if not chk.get("integrity_passed", False):
+        issues.append("Run 'python3 scripts/limpia_defensa.py patch-release' to synchronize catalog hashes")
+        
+    # 6. LaunchAgent Background Daemon
+    daemon_active = False
+    try:
+        la_proc = subprocess.run(["launchctl", "list"], capture_output=True, text=True)
+        if "com.limpiadefensa.agent" in la_proc.stdout:
+            daemon_active = True
+    except Exception:
+        pass
+        
+    # 7. Disk Health
+    disk_avail = "Unknown"
+    disk_cap = "Unknown"
+    try:
+        df_proc = subprocess.run(["df", "-h", "/System/Volumes/Data"], capture_output=True, text=True)
+        if df_proc.returncode == 0:
+            lines = df_proc.stdout.strip().split("\n")
+            if len(lines) > 1:
+                parts = lines[1].split()
+                disk_avail, disk_cap = parts[3], parts[4]
+    except Exception:
+        pass
+
+    return {
+        "timestamp": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "healthy": len(issues) == 0,
+        "issues": issues,
+        "python": {"version": py_ver, "status": "OK" if py_ok else "DEPRECATED"},
+        "os": {"version": sw_vers, "arch": arch, "status": "OK"},
+        "swift": {"version": v_line, "status": "OK" if swiftc_ok else "NOT_FOUND"},
+        "signatures": {
+            "gui_binary": gui_status,
+            "app_bundle": app_status
+        },
+        "catalog": {
+            "version": chk.get("catalog_version", "0.0.0"),
+            "status": "OK" if chk.get("integrity_passed", False) else "MODIFIED"
+        },
+        "daemon": {
+            "label": "com.limpiadefensa.agent",
+            "status": "ACTIVE" if daemon_active else "INACTIVE"
+        },
+        "disk": {
+            "available": disk_avail,
+            "capacity": disk_cap,
+            "status": "OK"
+        }
+    }
+
+class ThreadedHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
+    daemon_threads = True
+    allow_reuse_address = True
+
 class EnterpriseAPIRequestHandler(http.server.BaseHTTPRequestHandler):
     server_token = ""
+    server_start_time = time.time()
+    request_counter = 0
+    _lock = threading.Lock()
     
     def log_message(self, format, *args):
         pass
+
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept")
+        self.send_header("Access-Control-Max-Age", "86400")
+        self.send_header("Server", "LimpiaDefensa-Enterprise/1.3.4")
+        self.end_headers()
+        self.wfile.write(b'{"cors":"enabled"}')
 
     def check_auth(self):
         auth_header = self.headers.get("Authorization")
@@ -1169,9 +1760,13 @@ class EnterpriseAPIRequestHandler(http.server.BaseHTTPRequestHandler):
         return False
 
     def send_json(self, status_code, payload):
+        with EnterpriseAPIRequestHandler._lock:
+            EnterpriseAPIRequestHandler.request_counter += 1
         self.send_response(status_code)
         self.send_header("Content-Type", "application/json")
         self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept")
+        self.send_header("Server", "LimpiaDefensa-Enterprise/1.3.4")
         self.end_headers()
         self.wfile.write(json.dumps(payload).encode("utf-8"))
 
@@ -1182,6 +1777,28 @@ class EnterpriseAPIRequestHandler(http.server.BaseHTTPRequestHandler):
         parsed_url = urllib.parse.urlparse(self.path)
         path = parsed_url.path
         
+        # Unauthenticated liveness probe
+        if path == "/healthz":
+            uptime = round(time.time() - EnterpriseAPIRequestHandler.server_start_time, 2)
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            catalog_path = os.path.join(script_dir, "store_catalog.json")
+            cat_ver = "1.3.4"
+            if os.path.exists(catalog_path):
+                try:
+                    with open(catalog_path, "r", encoding="utf-8") as f:
+                        cat_ver = json.load(f).get("version", cat_ver)
+                except Exception:
+                    pass
+            self.send_json(200, {
+                "status": "healthy",
+                "service": "Limpia-Defensa Enterprise API",
+                "version": cat_ver,
+                "uptime_seconds": uptime,
+                "arch": platform.machine(),
+                "timestamp": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            })
+            return
+            
         if not self.check_auth():
             self.send_unauthorized()
             return
@@ -1189,6 +1806,8 @@ class EnterpriseAPIRequestHandler(http.server.BaseHTTPRequestHandler):
         if path == "/":
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Server", "LimpiaDefensa-Enterprise/1.3.4")
             self.end_headers()
             self.wfile.write(self.get_docs_html().encode("utf-8"))
             
@@ -1208,11 +1827,37 @@ class EnterpriseAPIRequestHandler(http.server.BaseHTTPRequestHandler):
                 
         elif path == "/api/store/status":
             try:
-                catalog_path = os.path.join(os.getcwd(), "scripts/store_catalog.json")
+                script_dir = os.path.dirname(os.path.abspath(__file__))
+                catalog_path = os.path.join(script_dir, "store_catalog.json")
                 report = run_store_check(catalog_path)
                 self.send_json(200, report)
             except Exception as e:
                 self.send_json(500, {"error": f"Store catalog audit failed: {e}", "trace": traceback.format_exc()})
+                
+        elif path == "/api/doctor":
+            try:
+                doc = get_doctor_report()
+                self.send_json(200, doc)
+            except Exception as e:
+                self.send_json(500, {"error": f"Doctor audit failed: {e}", "trace": traceback.format_exc()})
+
+        elif path == "/api/metrics":
+            uptime = round(time.time() - EnterpriseAPIRequestHandler.server_start_time, 2)
+            self.send_json(200, {
+                "service": "Limpia-Defensa Enterprise API",
+                "uptime_seconds": uptime,
+                "total_requests": EnterpriseAPIRequestHandler.request_counter,
+                "python_version": sys.version.split()[0],
+                "active_threads": threading.active_count(),
+                "pid": os.getpid()
+            })
+
+        elif path == "/api/backups":
+            try:
+                backups = run_list_backups("cloud", None)
+                self.send_json(200, backups)
+            except Exception as e:
+                self.send_json(500, {"error": f"Backups list failed: {e}", "trace": traceback.format_exc()})
                 
         else:
             self.send_json(404, {"error": "Endpoint not found"})
@@ -1341,6 +1986,24 @@ class EnterpriseAPIRequestHandler(http.server.BaseHTTPRequestHandler):
                 self.send_json(200, report)
             except Exception as e:
                 self.send_json(500, {"error": f"Failed to generate bug report: {e}"})
+
+        elif path == "/api/patch-release":
+            bump = body.get("bump", "patch")
+            dry_run = body.get("dry_run", False)
+            skip_tests = body.get("skip_tests", False)
+            pipeline_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "release_pipeline.py")
+            cmd = [sys.executable, pipeline_script, "--bump", bump]
+            if dry_run:
+                cmd.append("--dry-run")
+            if skip_tests:
+                cmd.append("--skip-tests")
+            res = subprocess.run(cmd, capture_output=True, text=True)
+            self.send_json(200 if res.returncode == 0 else 500, {
+                "status": "success" if res.returncode == 0 else "failed",
+                "returncode": res.returncode,
+                "stdout": res.stdout,
+                "stderr": res.stderr
+            })
                 
         else:
             self.send_json(404, {"error": "Endpoint not found"})
@@ -1596,14 +2259,118 @@ def run_store_check(catalog_path):
 
 def run_api_server(host, port, token):
     EnterpriseAPIRequestHandler.server_token = token
-    server = http.server.HTTPServer((host, port), EnterpriseAPIRequestHandler)
-    print(f"🚀 Limpia-Defensa Enterprise API Server running at http://{host}:{port}/")
+    EnterpriseAPIRequestHandler.server_start_time = time.time()
+    server = ThreadedHTTPServer((host, port), EnterpriseAPIRequestHandler)
+    print(f"🚀 Limpia-Defensa Enterprise Multi-Threaded API Server running at http://{host}:{port}/")
     print(f"🔒 Secure Bearer Token: {token}")
+    print(f"🩺 Liveness Health Probe: http://{host}:{port}/healthz")
+    print(f"📊 System Metrics Telemetry: http://{host}:{port}/api/metrics")
+    print(f"🩺 Remote System Diagnostics: http://{host}:{port}/api/doctor")
     try:
         server.serve_forever()
     except KeyboardInterrupt:
         print("\nShutting down API server...")
         server.server_close()
+
+def run_doctor():
+    doc = get_doctor_report()
+    print(f"\n{GREEN_COLOR}======================================================{RESET_COLOR}")
+    print(f"{GREEN_COLOR}🩺 LIMPIA-DEFENSA SOLO-OPERATOR SYSTEM DOCTOR{RESET_COLOR}")
+    print(f"{GREEN_COLOR}======================================================{RESET_COLOR}")
+    
+    py = doc["python"]
+    py_col = GREEN_COLOR if py["status"] == "OK" else RED_COLOR
+    print(f"  [+] Python Runtime: {py['version']} ({py_col}{py['status']}{RESET_COLOR})")
+    
+    os_info = doc["os"]
+    print(f"  [+] OS Architecture: {os_info['version']} ({os_info['arch']}) ({GREEN_COLOR}OK{RESET_COLOR})")
+    
+    sw = doc["swift"]
+    sw_col = GREEN_COLOR if sw["status"] == "OK" else RED_COLOR
+    print(f"  [+] Swift Compiler: {sw['version']} ({sw_col}{sw['status']}{RESET_COLOR})")
+    
+    sig = doc["signatures"]
+    gui_sig_col = GREEN_COLOR if sig["gui_binary"] == "SIGNED" else RED_COLOR
+    print(f"  [+] GUI Binary Signature: {sig['gui_binary']} ({gui_sig_col}{sig['gui_binary']}{RESET_COLOR})")
+    app_sig_col = GREEN_COLOR if sig["app_bundle"] == "SIGNED" else YELLOW_COLOR
+    print(f"  [+] App Bundle Signature: {sig['app_bundle']} ({app_sig_col}{sig['app_bundle']}{RESET_COLOR})")
+    
+    cat = doc["catalog"]
+    cat_col = GREEN_COLOR if cat["status"] == "OK" else RED_COLOR
+    print(f"  [+] Store Catalog Integrity: Version {cat['version']} ({cat_col}{cat['status']}{RESET_COLOR})")
+    
+    daemon = doc["daemon"]
+    daemon_col = GREEN_COLOR if daemon["status"] == "ACTIVE" else YELLOW_COLOR
+    print(f"  [+] Background Daemon: {daemon['label']} ({daemon_col}{daemon['status']}{RESET_COLOR})")
+    
+    disk = doc["disk"]
+    print(f"  [+] Disk Health: {disk['available']} available ({disk['capacity']} capacity) ({GREEN_COLOR}OK{RESET_COLOR})")
+    
+    print(f"\n{GREEN_COLOR}------------------------------------------------------{RESET_COLOR}")
+    if doc["healthy"]:
+        print(f"🎉 {GREEN_COLOR}ALL DOCTOR CHECKS PASSED! System is in prime operating state.{RESET_COLOR}\n")
+        return 0
+    else:
+        print(f"⚠️ {YELLOW_COLOR}{len(doc['issues'])} action item(s) recommended:{RESET_COLOR}")
+        for idx, item in enumerate(doc["issues"]):
+            print(f"   {idx+1}. {item}")
+        print()
+        return 1
+
+def install_daemon(port=8989, token="test-enterprise-token"):
+    user_home = os.path.expanduser("~")
+    launch_agents_dir = os.path.join(user_home, "Library", "LaunchAgents")
+    os.makedirs(launch_agents_dir, exist_ok=True)
+    
+    plist_path = os.path.join(launch_agents_dir, "com.limpiadefensa.agent.plist")
+    script_path = os.path.abspath(__file__)
+    python_bin = sys.executable
+    log_dir = os.path.join(user_home, "Library", "Logs")
+    os.makedirs(log_dir, exist_ok=True)
+    log_path = os.path.join(log_dir, "LimpiaDefensaAPI.log")
+    
+    plist_content = f"""<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.limpiadefensa.agent</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>{python_bin}</string>
+        <string>{script_path}</string>
+        <string>api-server</string>
+        <string>--port</string>
+        <string>{port}</string>
+        <string>--token</string>
+        <string>{token}</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>WorkingDirectory</key>
+    <string>{os.path.dirname(script_path)}</string>
+    <key>StandardOutPath</key>
+    <string>{log_path}</string>
+    <key>StandardErrorPath</key>
+    <string>{log_path}</string>
+</dict>
+</plist>
+"""
+    subprocess.run(["launchctl", "unload", plist_path], capture_output=True)
+    
+    with open(plist_path, "w", encoding="utf-8") as f:
+        f.write(plist_content)
+        
+    res = subprocess.run(["launchctl", "load", plist_path], capture_output=True, text=True)
+    if res.returncode == 0:
+        print(f"✅ LaunchAgent deployed and loaded successfully at: {plist_path}")
+        print(f"📡 API Server running on port {port} with token '{token}'")
+        return True
+    else:
+        print(f"⚠️ Failed to load LaunchAgent: {res.stderr}")
+        return False
 
 # ==============================================================================
 # MAIN PARSER ENTRYPOINT
@@ -1620,7 +2387,7 @@ def main():
     # Clean parser
     clean_parser = subparsers.add_parser("clean", help="Clean candidate directories")
     clean_parser.add_argument("--input", required=True, help="Path to scanned JSON results")
-    clean_parser.add_argument("--categories", required=True, help="Comma-separated categories to clean (caches,logs,installers,duplicates,orphans,vms,videos,photos,archives)")
+    clean_parser.add_argument("--categories", required=True, help="Comma-separated categories to clean (caches,developer_caches,ai_model_caches,trash,browser_caches,logs,installers,duplicates,orphans,vms,videos,photos,archives)")
     clean_parser.add_argument("--sudo", action="store_true", help="Elevate commands to system level")
     clean_parser.add_argument("--backup-type", default="cloud", choices=["local", "network", "cloud"], help="Backup target type")
     clean_parser.add_argument("--backup-path", help="Absolute path for custom backup targets")
@@ -1675,13 +2442,48 @@ def main():
     store_parser = subparsers.add_parser("store-check", help="Audit local files integrity against the store catalog")
     store_parser.add_argument("--catalog", help="Path to store_catalog.json")
 
+    # Doctor parser
+    doc_parser = subparsers.add_parser("doctor", help="Run solo-operator system environment and health audit")
+
+    # Install Daemon parser
+    daemon_parser = subparsers.add_parser("install-daemon", help="Generate and deploy LaunchAgent background service")
+    daemon_parser.add_argument("--port", type=int, default=8989, help="Port to bind API server (default: 8989)")
+    daemon_parser.add_argument("--token", default="test-enterprise-token", help="Bearer authentication token")
+
+    # Patch Release parser
+    patch_parser = subparsers.add_parser("patch-release", help="Execute automated solo-operator release and patch pipeline")
+    patch_parser.add_argument("--bump", choices=["patch", "minor", "major"], default="patch", help="Semver level to bump (default: patch)")
+    patch_parser.add_argument("--version", help="Explicit version override (e.g. 1.3.1)")
+    patch_parser.add_argument("--skip-tests", action="store_true", help="Skip running Kali test suite")
+    patch_parser.add_argument("--dry-run", action="store_true", help="Preview actions without modifying files")
+
     args = parser.parse_args()
 
     if not args.command:
         parser.print_help()
         sys.exit(1)
 
-    if args.command == "scan":
+    if args.command == "doctor":
+        exit_code = run_doctor()
+        sys.exit(exit_code)
+
+    elif args.command == "install-daemon":
+        success = install_daemon(port=args.port, token=args.token)
+        sys.exit(0 if success else 1)
+
+    elif args.command == "patch-release":
+        pipeline_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "release_pipeline.py")
+        cmd = [sys.executable, pipeline_script, "--bump", args.bump]
+        if args.version:
+            cmd.extend(["--version", args.version])
+        if args.skip_tests:
+            cmd.append("--skip-tests")
+        if args.dry_run:
+            cmd.append("--dry-run")
+        res = subprocess.run(cmd)
+        sys.exit(res.returncode)
+
+    elif args.command == "scan":
         print("🔎 Scanning system directories...")
         results = run_scan()
         with open(args.output, "w", encoding="utf-8") as f:

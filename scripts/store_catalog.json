@@ -1,24 +1,24 @@
 {
-  "version": "1.2.0",
-  "last_updated": "2026-08-31T18:47:00Z",
+  "version": "1.3.7",
+  "last_updated": "2026-09-02T19:40:41Z",
   "modules": [
     {
       "name": "limpia_defensa.py",
       "type": "cli_engine",
       "path": "scripts/limpia_defensa.py",
-      "sha256": "58663466c67d791ad08288b0d719bfa5df1909ef1db670596f569447cd39e042"
+      "sha256": "f50f6f890ed4d28db2e2fc2b467ffa7aec3d0d242444b9442e77ff48f1c269cb"
     },
     {
       "name": "LimpiaDefensaGUI.swift",
       "type": "gui_source",
       "path": "scripts/LimpiaDefensaGUI.swift",
-      "sha256": "16398452ddefa93bbe730fa18a4e50a7d38b4a55ebea84c9e5065194d8629326"
+      "sha256": "5934b2d667543aa17e0148d52e0b6a613be619ffaf7e8ecbb1b5904cb7a5ce8e"
     },
     {
       "name": "limpia-defensa-gui",
       "type": "gui_binary",
       "path": "scripts/limpia-defensa-gui",
-      "sha256": "b30480e347de6d23fd8d43c85caa454e0541571d0be2bfdb776a14b66943d088"
+      "sha256": "389f9727c090af537bf49e9587cd30e574d5649ada5006b19ad0f7d8ae76a2dd"
     },
     {
       "name": "com.limpiadefensa.agent.plist",
@@ -30,7 +30,19 @@
       "name": "kali_test_suite.py",
       "type": "test_suite",
       "path": "scripts/kali_test_suite.py",
-      "sha256": "05057f696bf445689632a80de150e8cc62a7ea32b6271344e5efdef19c2f58a9"
+      "sha256": "fd3247de7f0c080ef937f26ed0d082a80d1ee0975c81e5d6217a010841ac40b5"
+    },
+    {
+      "name": "release_pipeline.py",
+      "type": "pipeline_engine",
+      "path": "scripts/release_pipeline.py",
+      "sha256": "6b7b0b9aca707b32bd35332a64dd2e7b6903a78a47a13444600210753dd8d45e"
+    },
+    {
+      "name": "verify_truth_and_excellence.py",
+      "type": "audit_engine",
+      "path": "scripts/verify_truth_and_excellence.py",
+      "sha256": "de81582b6858055df4416f79919c6435df538a720ff8764ee8da23d4e857f549"
     }
   ]
 }

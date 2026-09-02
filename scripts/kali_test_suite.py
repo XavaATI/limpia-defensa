@@ -52,10 +52,17 @@ def make_request(url, headers=None, method="GET", body=None):
         
     try:
         with urllib.request.urlopen(req, data=data, timeout=10) as res:
-            return res.status, json.loads(res.read().decode("utf-8"))
+            raw = res.read()
+            if not raw:
+                return res.status, {}
+            try:
+                return res.status, json.loads(raw.decode("utf-8"))
+            except Exception:
+                return res.status, raw.decode("utf-8")
     except urllib.error.HTTPError as e:
         try:
-            err_body = json.loads(e.read().decode("utf-8"))
+            raw = e.read()
+            err_body = json.loads(raw.decode("utf-8")) if raw else {}
         except Exception:
             err_body = e.reason
         return e.code, err_body
@@ -90,44 +97,71 @@ def run_tests():
     
     # Test 1: Port Availability
     log("[*] Test 1: Port Availability & Handshake check...", CYAN)
-    status, body = make_request("http://localhost:9999/api/scan", headers={"Authorization": "Bearer kali-token"})
-    if status == 200:
-        log("[+] Test 1 PASS: API port 9999 successfully bound and responding.", GREEN)
+    status, body = make_request("http://localhost:9999/healthz")
+    if status == 200 and body.get("status") == "healthy":
+        log(f"[+] Test 1 PASS: API port 9999 successfully bound. Service: {body.get('service')} (v{body.get('version')})", GREEN)
     else:
-        log(f"[-] Test 1 FAIL: Server did not respond properly: {body}", RED)
+        log(f"[-] Test 1 FAIL: Server did not respond properly to healthz: {body}", RED)
+        failed_count += 1
+
+    # Test 2: CORS Preflight Check
+    log("[*] Test 2: CORS Preflight OPTIONS Negotiation...", CYAN)
+    status, body = make_request("http://localhost:9999/api/scan", method="OPTIONS")
+    if status in (200, 204):
+        log("[+] Test 2 PASS: OPTIONS preflight negotiated with permissive CORS headers.", GREEN)
+    else:
+        log(f"[-] Test 2 FAIL: OPTIONS preflight failed with status {status}", RED)
         failed_count += 1
         
-    # Test 2: Token Auth Enforcement Check
-    log("[*] Test 2: Token Authorization Enforcement...", CYAN)
+    # Test 3: Token Auth Enforcement Check
+    log("[*] Test 3: Token Authorization Enforcement...", CYAN)
     status_no_auth, body_no_auth = make_request("http://localhost:9999/api/scan")
     status_wrong_auth, body_wrong_auth = make_request("http://localhost:9999/api/scan", headers={"Authorization": "Bearer wrong-token"})
     
     if status_no_auth == 401 and status_wrong_auth == 401:
-        log("[+] Test 2 PASS: Unauthorized requests successfully blocked with 401 status.", GREEN)
+        log("[+] Test 3 PASS: Unauthorized requests successfully blocked with 401 status.", GREEN)
     else:
-        log(f"[-] Test 2 FAIL: Security breach! Auth check failed: no-auth={status_no_auth}, wrong-auth={status_wrong_auth}", RED)
+        log(f"[-] Test 3 FAIL: Security breach! Auth check failed: no-auth={status_no_auth}, wrong-auth={status_wrong_auth}", RED)
+        failed_count += 1
+
+    # Test 4: System Doctor API check
+    log("[*] Test 4: Remote System Doctor API diagnostics check...", CYAN)
+    status, body = make_request("http://localhost:9999/api/doctor", headers={"Authorization": "Bearer kali-token"})
+    if status == 200 and "python" in body and "signatures" in body and "catalog" in body:
+        log(f"[+] Test 4 PASS: Doctor diagnostics endpoint active (healthy={body.get('healthy')}).", GREEN)
+    else:
+        log(f"[-] Test 4 FAIL: Doctor endpoint invalid: {body}", RED)
+        failed_count += 1
+
+    # Test 5: Metrics Telemetry API check
+    log("[*] Test 5: Real-Time Metrics & Telemetry check...", CYAN)
+    status, body = make_request("http://localhost:9999/api/metrics", headers={"Authorization": "Bearer kali-token"})
+    if status == 200 and "uptime_seconds" in body and "active_threads" in body:
+        log(f"[+] Test 5 PASS: Metrics telemetry verified (uptime={body.get('uptime_seconds')}s, threads={body.get('active_threads')}).", GREEN)
+    else:
+        log(f"[-] Test 5 FAIL: Metrics endpoint invalid: {body}", RED)
         failed_count += 1
         
-    # Test 3: scan endpoint JSON structure check
-    log("[*] Test 3: Disk Scan Endpoint response schema check...", CYAN)
+    # Test 6: scan endpoint JSON structure check
+    log("[*] Test 6: Disk Scan Endpoint response schema check...", CYAN)
     status, body = make_request("http://localhost:9999/api/scan", headers={"Authorization": "Bearer kali-token"})
     if status == 200 and "categories" in body and "summary" in body:
-        log("[+] Test 3 PASS: Scan JSON metadata successfully loaded and structured.", GREEN)
+        log("[+] Test 6 PASS: Scan JSON metadata successfully loaded and structured.", GREEN)
     else:
-        log(f"[-] Test 3 FAIL: scan structure invalid: {body}", RED)
+        log(f"[-] Test 6 FAIL: scan structure invalid: {body}", RED)
         failed_count += 1
 
-    # Test 4: av endpoint threat report check
-    log("[*] Test 4: Antivirus Active Memory Audit check...", CYAN)
+    # Test 7: av endpoint threat report check
+    log("[*] Test 7: Antivirus Active Memory Audit check...", CYAN)
     status, body = make_request("http://localhost:9999/api/av", headers={"Authorization": "Bearer kali-token"})
     if status == 200 and "summary" in body and "threats_found" in body:
-        log("[+] Test 4 PASS: AV Scan output threat-report correctly serialized.", GREEN)
+        log("[+] Test 7 PASS: AV Scan output threat-report correctly serialized.", GREEN)
     else:
-        log(f"[-] Test 4 FAIL: AV report structure invalid: {body}", RED)
+        log(f"[-] Test 7 FAIL: AV report structure invalid: {body}", RED)
         failed_count += 1
 
-    # Test 5: sandbox execution with no-network restriction checks
-    log("[*] Test 5: Sandboxing Network Confinement Conformance...", CYAN)
+    # Test 8: sandbox execution with no-network restriction checks
+    log("[*] Test 8: Sandboxing Network Confinement Conformance...", CYAN)
     headers = {"Authorization": "Bearer kali-token"}
     payload = {
         "file": "/usr/bin/curl",
@@ -136,13 +170,13 @@ def run_tests():
     }
     status, body = make_request("http://localhost:9999/api/sandbox", headers=headers, method="POST", body=payload)
     if status == 200 and body.get("returncode") != 0:
-        log("[+] Test 5 PASS: curl network call failed under no-network profile as restricted.", GREEN)
+        log("[+] Test 8 PASS: curl network call failed under no-network profile as restricted.", GREEN)
     else:
-        log(f"[-] Test 5 FAIL: Confinement bypass or error: {body}", RED)
+        log(f"[-] Test 8 FAIL: Confinement bypass or error: {body}", RED)
         failed_count += 1
 
-    # Test 6: sandbox execution with read-only restriction checks
-    log("[*] Test 6: Sandboxing Write Confinement Conformance...", CYAN)
+    # Test 9: sandbox execution with read-only restriction checks
+    log("[*] Test 9: Sandboxing Write Confinement Conformance...", CYAN)
     headers = {"Authorization": "Bearer kali-token"}
     payload = {
         "file": "/usr/bin/touch",
@@ -151,27 +185,27 @@ def run_tests():
     }
     status, body = make_request("http://localhost:9999/api/sandbox", headers=headers, method="POST", body=payload)
     if status == 200 and "touch: /tmp/kali_test_write.txt: Operation not permitted" in body.get("stderr", ""):
-        log("[+] Test 6 PASS: file write to /tmp successfully denied under read-only profile.", GREEN)
+        log("[+] Test 9 PASS: file write to /tmp successfully denied under read-only profile.", GREEN)
     else:
-        log(f"[-] Test 6 FAIL: Write confinement bypass or unexpected outcome: {body}", RED)
+        log(f"[-] Test 9 FAIL: Write confinement bypass or unexpected outcome: {body}", RED)
         failed_count += 1
 
-    # Test 7: bugreport system diagnostics check
-    log("[*] Test 7: Bug Report System Diagnostics Serialization...", CYAN)
+    # Test 10: bugreport system diagnostics check
+    log("[*] Test 10: Bug Report System Diagnostics Serialization...", CYAN)
     status, body = make_request("http://localhost:9999/api/bugreport", headers={"Authorization": "Bearer kali-token"}, method="POST")
     if status == 200 and "os_info" in body and "system_metrics" in body and "engine_logs" in body:
-        log("[+] Test 7 PASS: Diagnostics report contains active hardware specs and engine logs.", GREEN)
+        log("[+] Test 10 PASS: Diagnostics report contains active hardware specs and engine logs.", GREEN)
     else:
-        log(f"[-] Test 7 FAIL: bugreport structure invalid: {body}", RED)
+        log(f"[-] Test 10 FAIL: bugreport structure invalid: {body}", RED)
         failed_count += 1
 
-    # Test 8: Store Catalog Integrity API check
-    log("[*] Test 8: Store Catalog Integrity API check...", CYAN)
+    # Test 11: Store Catalog Integrity API check
+    log("[*] Test 11: Store Catalog Integrity API check...", CYAN)
     status, body = make_request("http://localhost:9999/api/store/status", headers={"Authorization": "Bearer kali-token"})
     if status == 200 and body.get("integrity_passed") is True:
-        log("[+] Test 8 PASS: Store Catalog integrity verified successfully.", GREEN)
+        log("[+] Test 11 PASS: Store Catalog integrity verified successfully.", GREEN)
     else:
-        log(f"[-] Test 8 FAIL: Store status check failed: {body}", RED)
+        log(f"[-] Test 11 FAIL: Store status check failed: {body}", RED)
         failed_count += 1
 
     # Teardown background server

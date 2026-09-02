@@ -1648,10 +1648,12 @@ def get_doctor_report():
         issues.append("Install Xcode Command Line Tools: xcode-select --install")
         
     # 4. Binary Code Signatures
-    script_dir = os.path.dirname(os.path.abspath(__file__))
+    real_file = os.path.realpath(__file__)
+    script_dir = os.path.dirname(real_file)
     workspace_root = os.path.dirname(script_dir)
     gui_candidates = [
         os.path.join(script_dir, "limpia-defensa-gui"),
+        os.path.join(workspace_root, "scripts", "limpia-defensa-gui"),
         os.path.join(workspace_root, "bin", "limpia-defensa-gui"),
         shutil.which("limpia-defensa-gui")
     ]
@@ -2207,7 +2209,8 @@ RED_COLOR = "\033[1;31m"
 YELLOW_COLOR = "\033[1;33m"
 
 def find_catalog_path():
-    script_dir = os.path.dirname(os.path.abspath(__file__))
+    real_file = os.path.realpath(__file__)
+    script_dir = os.path.dirname(real_file)
     workspace_root = os.path.dirname(script_dir)
     candidates = [
         os.path.join(script_dir, "store_catalog.json"),
@@ -2249,13 +2252,14 @@ def run_store_check(catalog_path=None):
             path = module.get("path")
             expected_hash = module.get("sha256")
             
-            script_dir = os.path.dirname(os.path.abspath(__file__))
+            real_file = os.path.realpath(__file__)
+            script_dir = os.path.dirname(real_file)
             workspace_root = os.path.dirname(script_dir)
             base_filename = os.path.basename(path)
             candidate_paths = [
                 os.path.abspath(os.path.join(workspace_root, path)),
-                os.path.abspath(os.path.join(workspace_root, "bin", base_filename)),
                 os.path.abspath(os.path.join(workspace_root, "scripts", base_filename)),
+                os.path.abspath(os.path.join(workspace_root, "bin", base_filename)),
                 os.path.abspath(os.path.join(script_dir, base_filename)),
             ]
             abs_path = next((cp for cp in candidate_paths if os.path.exists(cp)), candidate_paths[0])

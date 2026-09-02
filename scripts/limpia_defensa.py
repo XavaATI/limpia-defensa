@@ -2564,7 +2564,7 @@ def main():
 
     elif args.command == "store-check":
         print("📦 Commencing local Store Catalog integrity audit...")
-        catalog_path = args.catalog if args.catalog else os.path.join(os.path.dirname(os.path.abspath(__file__)), "store_catalog.json")
+        catalog_path = args.catalog if args.catalog else find_catalog_path()
         report = run_store_check(catalog_path)
         print(f"Catalog Version: {report['catalog_version']} | Last Updated: {report['last_updated']}")
         print("--------------------------------------------------")

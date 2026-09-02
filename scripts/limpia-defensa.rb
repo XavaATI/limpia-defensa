@@ -1,8 +1,8 @@
 class LimpiaDefensa < Formula
   desc "Secure system optimizer and malware scanner for macOS"
   homepage "https://github.com/XavaATI/limpia-defensa"
-  url "https://github.com/XavaATI/limpia-defensa/releases/download/v1.4.0/limpia-defensa-v1.4.0.tar.gz"
-  sha256 "5c7a1cf9af42aba2b0c2afe00bc5b2c5cfa5442063d18d814862f266626c874e"
+  url "https://github.com/XavaATI/limpia-defensa/releases/download/v1.4.1/limpia-defensa-v1.4.1.tar.gz"
+  sha256 "63db90945eed62128f1f36dd408bdc9cf4d2ef60cec31c93161b6297fe310127"
   license "MIT"
 
   depends_on "python@3"
@@ -18,7 +18,10 @@ class LimpiaDefensa < Formula
     # Install GUI binary (compiled & signed)
     bin.install "scripts/limpia-defensa-gui"
 
-    # Install LaunchAgent template, Store Catalog, and Test Suites
+    # Install LaunchAgent template, Store Catalog, Source & Test Suites
+    (prefix/"scripts").install "scripts/limpia_defensa.py"
+    (prefix/"scripts").install "scripts/release_pipeline.py"
+    (prefix/"scripts").install "scripts/LimpiaDefensaGUI.swift"
     (prefix/"scripts").install "scripts/com.limpiadefensa.agent.plist"
     (prefix/"scripts").install "scripts/store_catalog.json"
     (prefix/"scripts").install "scripts/kali_test_suite.py"

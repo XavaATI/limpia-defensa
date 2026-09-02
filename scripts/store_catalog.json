@@ -1,12 +1,12 @@
 {
-  "version": "1.4.0",
-  "last_updated": "2026-09-02T20:05:37Z",
+  "version": "1.4.1",
+  "last_updated": "2026-09-02T20:07:02Z",
   "modules": [
     {
       "name": "limpia_defensa.py",
       "type": "cli_engine",
       "path": "scripts/limpia_defensa.py",
-      "sha256": "b1dc3a930cf721b4cfa79c40046818437a1c75949a2dc0636bb925f6f5257027"
+      "sha256": "a2e40e8e7a230d45a14415ff5c04fb31d577d4533d917789ab654e17af499c31"
     },
     {
       "name": "LimpiaDefensaGUI.swift",

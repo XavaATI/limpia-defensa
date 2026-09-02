@@ -1,31 +1,21 @@
 class LimpiaDefensa < Formula
   desc "Secure system optimizer and malware scanner for macOS"
   homepage "https://github.com/XavaATI/limpia-defensa"
-  url "https://github.com/XavaATI/limpia-defensa/releases/download/v1.4.1/limpia-defensa-v1.4.1.tar.gz"
-  sha256 "63db90945eed62128f1f36dd408bdc9cf4d2ef60cec31c93161b6297fe310127"
+  url "https://github.com/XavaATI/limpia-defensa/releases/download/v1.4.2/limpia-defensa-v1.4.2.tar.gz"
+  sha256 "c48a2e8cf077c4972967c3205bfd9e2dc49617e7ba2d86b244f74008a889fa26"
   license "MIT"
 
   depends_on "python@3"
 
   def install
-    # Install CLI engine
-    bin.install "scripts/limpia_defensa.py" => "limpia-defensa-cli"
+    # Install all scripts, store catalog, plist, and test suites into prefix/scripts
+    (prefix/"scripts").install Dir["scripts/*"]
+
+    # Install executable symlinks into bin
+    bin.install_symlink "#{prefix}/scripts/limpia_defensa.py" => "limpia-defensa-cli"
     bin.install_symlink "#{bin}/limpia-defensa-cli" => "limpia-defensa"
-
-    # Install Solo-Operator Release Pipeline
-    bin.install "scripts/release_pipeline.py" => "limpia-defensa-release"
-
-    # Install GUI binary (compiled & signed)
-    bin.install "scripts/limpia-defensa-gui"
-
-    # Install LaunchAgent template, Store Catalog, Source & Test Suites
-    (prefix/"scripts").install "scripts/limpia_defensa.py"
-    (prefix/"scripts").install "scripts/release_pipeline.py"
-    (prefix/"scripts").install "scripts/LimpiaDefensaGUI.swift"
-    (prefix/"scripts").install "scripts/com.limpiadefensa.agent.plist"
-    (prefix/"scripts").install "scripts/store_catalog.json"
-    (prefix/"scripts").install "scripts/kali_test_suite.py"
-    (prefix/"scripts").install "scripts/verify_truth_and_excellence.py"
+    bin.install_symlink "#{prefix}/scripts/release_pipeline.py" => "limpia-defensa-release"
+    bin.install_symlink "#{prefix}/scripts/limpia-defensa-gui" => "limpia-defensa-gui"
   end
 
   def caveats
